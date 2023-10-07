@@ -28,7 +28,7 @@ public class Rook implements ChessPiece {
         int[] colDirs = { 0, 0, -1, 1 };
 
         for (int i = 0; i < 4; i++) {
-            for (int distance = 1; distance <= 7; distance++) { // Rook can move at most 7 squares in any direction
+            for (int distance = 1; distance < 8; distance++) { // Rook can move at most 7 squares in any direction
                 int newRow = myPosition.getRow() + rowDirs[i] * distance;
                 int newCol = myPosition.getColumn() + colDirs[i] * distance;
 
@@ -56,5 +56,18 @@ public class Rook implements ChessPiece {
         return row >= 1 && row <= 8 && col >= 1 && col <= 8;
     }
 }
+
+
+
+
+/**
+ * [[0,1,2,3,4,5,6,7],
+ * [0,1,2,3,4,5,6,7],
+ * [0,1,2,3,4,5,6,7],
+ * [0,1,2,3,4,5,6,7],
+ * [0,1,2,3,4,5,6,7],
+ * [0,1,2,3,4,5,6,7],
+ * [0,1,2,3,4,5,6,7],]
+ * */
 
 

@@ -23,11 +23,11 @@ public class Queen implements ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         Set<ChessMove> validMoves = new HashSet<>();
 
-        int[] rowDirs = { -1, 1, 1, -1, -1, 1, 0, 0 }; // DownLeft, UpRight, RightDown, LeftUp
+        int[] rowDirs = { -1, 1, 1, -1, -1, 1, 0, 0 };
         int[] colDirs = { -1, 1, -1, 1, 0, 0, -1, 1 };
 
         for (int i = 0; i < 8; i++) {
-            for (int distance = 1; distance <= 7; distance++) { // Bishop can move at most 7 squares in any direction
+            for (int distance = 1; distance <= 7; distance++) { // Queen can move at most 7 squares in any direction
                 int newRow = myPosition.getRow() + rowDirs[i] * distance;
                 int newCol = myPosition.getColumn() + colDirs[i] * distance;
 
@@ -39,12 +39,12 @@ public class Queen implements ChessPiece {
                         validMoves.add(new Move(myPosition, newPosition));
                     } else if (pieceAtNewPosition.getTeamColor() != teamColor) {
                         validMoves.add(new Move(myPosition, newPosition));
-                        break; // Bishop can't go beyond an opponent's piece
+                        break; // Queen can't go beyond an opponent's piece
                     } else {
-                        break; // Bishop can't go beyond its own piece
+                        break; // Queen can't go beyond its own piece
                     }
                 } else {
-                    break; // Bishop can't go beyond the board
+                    break; // Queen can't go beyond the board
                 }
             }
         }

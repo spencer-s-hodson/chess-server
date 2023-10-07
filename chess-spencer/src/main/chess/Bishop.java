@@ -28,7 +28,7 @@ public class Bishop implements ChessPiece {
         int[] colDirs = { -1, 1, -1, 1 };
 
         for (int i = 0; i < 4; i++) {
-            for (int distance = 1; distance <= 7; distance++) { // Bishop can move at most 7 squares in any direction
+            for (int distance = 1; distance < 8; distance++) { // Bishop can move at most 7 squares in any direction
                 int newRow = myPosition.getRow() + rowDirs[i] * distance;
                 int newCol = myPosition.getColumn() + colDirs[i] * distance;
 
