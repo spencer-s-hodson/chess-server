@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Objects;
+import java.util.Set;
 
 public class Move implements ChessMove {
     private ChessPosition startPosition;
@@ -31,6 +32,9 @@ public class Move implements ChessMove {
     @Override
     public ChessPiece.PieceType getPromotionPiece() {
         return promotionPiece;
+    }
+    public void applyMove() {
+
     }
     @Override
     public boolean equals(Object o) {

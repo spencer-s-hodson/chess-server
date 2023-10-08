@@ -6,7 +6,7 @@ public class Board implements ChessBoard { // can exist without Board DONE DO NO
         board = new ChessPiece[8][8];
     }
     @Override
-    public void addPiece(ChessPosition position, ChessPiece piece) {
+    public void addPiece(ChessPosition position, ChessPiece piece) { // if i want to remove a piece, just call this method and use null for the ChessPiece argument
         board[position.getRow()-1][position.getColumn()-1] = piece;
     }
 
