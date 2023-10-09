@@ -24,32 +24,44 @@ public class Game implements ChessGame {
         * for each move in moves, makeMove
         * then run isInCheck
         * But here is where I need to check for Checkmate etc.*/
-
+        Collection<ChessMove> validMoves = new HashSet<>();
 
         ChessPiece piece = board.getPiece(startPosition);
         TeamColor currColor = piece.getTeamColor();
         Collection<ChessMove> moves = piece.pieceMoves(board, startPosition);
         for (ChessMove move : moves) {
-            try {
-                makeMove(move);
-                if (!isInCheck(currColor)) moves.remove(move);
+            // piece that might get captured
+            ChessPiece tempPiece = board.getPiece(move.getEndPosition());
 
-            } catch (InvalidMoveException e) {
-                moves.remove(move);
-            }
+            // temp move
+            board.addPiece(move.getEndPosition(), piece);
+            board.addPiece(move.getStartPosition(), null);
+
+            // check for check
+            if (!isInCheck(currColor)) validMoves.add(move);
+
+            // put back piece that moved
+            board.addPiece(move.getStartPosition(), piece);
+
+            // put back piece that might have been captured
+            board.addPiece(move.getEndPosition(), tempPiece);
         }
-        return moves;
+        return validMoves;
     }
 
     @Override // come back to the invalid move later
     public void makeMove(ChessMove move) throws InvalidMoveException { // updates the position based off of the move it gives, checks to see if the move is valid
         Collection<ChessMove> moves = validMoves(move.getStartPosition());
-        if (!moves.contains(move)) {
-            throw new InvalidMoveException();
-        }
 
         // get the piece at the startPosition
         ChessPiece piece = board.getPiece(move.getStartPosition());
+
+        if (!moves.contains(move) || piece.getTeamColor() != currTurn) {
+            throw new InvalidMoveException();
+        }
+
+
+//        ChessPiece piece = board.getPiece(move.getStartPosition());
 
         // remove the piece at it's original position
         board.addPiece(move.getStartPosition(), null);
@@ -93,7 +105,27 @@ public class Game implements ChessGame {
     public boolean isInCheckmate(TeamColor teamColor) {
         /*
         * Find the king with the right color
-        * ifValidMoves is empty and current positon is in check return true*/
+        * ifValidMoves is empty and current positon is in check return true
+        */
+
+        // can't be in checkmate if current team is not in check
+        if (!isInCheck(teamColor)) return false;
+        // go through each position
+        for (int row = 1; row < 9; row++) {
+            for (int col = 1; col < 9; col++) {
+                // stuff to use
+                ChessPosition position = new Position(row, col);
+                // doesn't like this right now, check for null
+                ChessPiece piece = board.getPiece(position);
+                if (piece != null) {
+                    // find the right king
+                    if (piece.getPieceType() == ChessPiece.PieceType.KING && piece.getTeamColor() == teamColor) {
+                        if (validMoves(position).isEmpty()) return true;
+                        else return false;
+                    }
+                }
+            }
+        }
         return false;
     }
     // get the set of moves for the king and see if all of those including his starting posiotion are inCheckmate

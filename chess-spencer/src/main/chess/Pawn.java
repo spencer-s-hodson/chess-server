@@ -85,7 +85,6 @@ public class Pawn implements ChessPiece {
                     }
                 }
             }
-
         }
         // blacks pawns
         else {
