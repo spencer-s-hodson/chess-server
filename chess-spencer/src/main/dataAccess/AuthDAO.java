@@ -1,6 +1,6 @@
 package dataAccess;
 
-public interface AuthDAO {
+public class AuthDAO {
     /*
     possible methods include:
         Insert: A method for inserting a new game into the database.
