@@ -1,14 +1,16 @@
 package services;
 
-//import requests.ClearApplicationRequest;
-import results.ClearApplicationResult;
+import results.ClearApplicationResponse;
 
 /**
  * Clears the database. Removes all users, games, and authTokens.
  */
 public class ClearApplicationService {
-    public ClearApplicationResult clearApplication() {
-        // call on some method that ClearApplicationRequest has
-        return new ClearApplicationResult(500, "Error: description");
+    /**
+     * Clear all data from the database, and returns a response
+     * @return The result of trying to clear the database
+     */
+    public ClearApplicationResponse clearApplication() {
+        return new ClearApplicationResponse( "Error: description");
     }
 }

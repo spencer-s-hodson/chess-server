@@ -3,7 +3,7 @@ package models;
 import java.util.Objects;
 
 /**
- * This class contains information about an authorization token
+ * This class contains information about an authorization token for a user
  */
 public class AuthToken {
     /**

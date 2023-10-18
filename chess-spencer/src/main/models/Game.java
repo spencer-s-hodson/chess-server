@@ -9,26 +9,45 @@ import java.util.Objects;
  */
 
 public class Game {
+    /**
+     * The game ID for the chess game
+     */
     private int gameID;
+    /**
+     * The white team's username for the chess game
+     */
     private String whiteUsername;
+    /**
+     * The black team's username for the chess game
+     */
     private String blackUsername;
+    /**
+     * The name of the chess game
+     */
     private String gameName;
+    /**
+     * The logic for the chess game
+     */
     private ChessGame game;
 
     /**
-     * Constructs a new game object
+     * Constructs a Game object
+     * @param gameID The game ID for the chess game
+     * @param whiteUsername The white team's username for the chess game
+     * @param blackUsername The black team's username for the chess game
+     * @param gameName The name of the chess game
      */
     public Game(int gameID, String whiteUsername, String blackUsername, String gameName) {
         this.gameID = gameID;
         this.whiteUsername = whiteUsername;
         this.blackUsername = blackUsername;
         this.gameName = gameName;
-        this.game = new chess.Game(); // like this?
+        this.game = new chess.Game();
     }
 
     /**
      * Returns the game ID
-     * @return the game ID
+     * @return The game ID
      */
     public int getGameID() {
         return gameID;
@@ -36,7 +55,7 @@ public class Game {
 
     /**
      * Sets a new game ID
-     * @param gameID the new game ID
+     * @param gameID The new game ID
      */
     public void setGameID(int gameID) {
         this.gameID = gameID;
@@ -44,7 +63,7 @@ public class Game {
 
     /**
      * Returns the username for the white team
-     * @return the white team's username
+     * @return The white team's username
      */
     public String getWhiteUsername() {
         return whiteUsername;
@@ -52,7 +71,7 @@ public class Game {
 
     /**
      * Sets a new username for the white team
-     * @param whiteUsername the white team's new username
+     * @param whiteUsername The white team's new username
      */
     public void setWhiteUsername(String whiteUsername) {
         this.whiteUsername = whiteUsername;
@@ -60,7 +79,7 @@ public class Game {
 
     /**
      * Returns the username for the black team
-     * @return the black team's username
+     * @return The black team's username
      */
     public String getBlackUsername() {
         return blackUsername;
@@ -68,7 +87,7 @@ public class Game {
 
     /**
      * Set a new username for the black team
-     * @param blackUsername the black team's new username
+     * @param blackUsername The black team's new username
      */
     public void setBlackUsername(String blackUsername) {
         this.blackUsername = blackUsername;
@@ -76,7 +95,7 @@ public class Game {
 
     /**
      * Returns the game's name
-     * @return the game's name
+     * @return The game's name
      */
     public String getGameName() {
         return gameName;
@@ -84,7 +103,7 @@ public class Game {
 
     /**
      * Sets a new name for the game
-     * @param gameName the new name of the game
+     * @param gameName The new name of the game
      */
     public void setGameName(String gameName) {
         this.gameName = gameName;
@@ -92,7 +111,7 @@ public class Game {
 
     /**
      * Returns the all logic and board for the chess game
-     * @return the logic and board for the chess game
+     * @return The logic and board for the chess game
      */
     public ChessGame getGame() {
         return game;
@@ -100,7 +119,7 @@ public class Game {
 
     /**
      * Sets the logic and a new board for the chess game
-     * @param game the logic and new board for the chess game
+     * @param game The logic and new board for the chess game
      */
     public void setGame(ChessGame game) {
         this.game = game;

@@ -1,10 +1,16 @@
 package services;
 
-import requests.ListGamesRequest;
-import results.ListGamesResult;
+import results.ListGamesResponse;
 
+/**
+ * This class represents the service of getting a list of all of previous games
+ */
 public class ListGamesService {
-    public ListGamesResult listGames(ListGamesRequest r) {
-        return new ListGamesResult();
+    /**
+     * Gets the list of all previous games played, and returns a response
+     * @return The response from getting the previous games
+     */
+    public ListGamesResponse listGames() {
+        return new ListGamesResponse(new models.Game[1]);
     }
 }
