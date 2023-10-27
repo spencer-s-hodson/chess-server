@@ -2,11 +2,15 @@ package dataAccess;
 
 import models.AuthToken;
 
+import java.util.HashSet;
+import java.util.Objects;
+
 /**
  * The class provides methods to access and manipulate AuthToken objects in the data store.
  */
 
 public class AuthDAO {
+    private static HashSet<AuthToken> authTokens = new HashSet<>();
     /**
      * Returns an AuthToken associated with a specified username
      * @param userName The username used to get the AuthToken
@@ -17,6 +21,8 @@ public class AuthDAO {
         // TODO
         return null;
     }
+
+
 
     /**
      * Updates information within an AuthToken
@@ -35,7 +41,7 @@ public class AuthDAO {
      * @throws DataAccessException when the AuthToken already exists in the data store
      */
     public void addAuthToken(AuthToken authToken) throws DataAccessException {
-        // TODO
+        authTokens.add(authToken);
     }
 
     /**
@@ -44,7 +50,18 @@ public class AuthDAO {
      * @throws DataAccessException when the AuthToken doesn't exist in the data store
      */
     public void removeAuthToken(AuthToken authToken) throws DataAccessException {
-        // TODO
+        for (AuthToken at : authTokens) {
+            if (at == authToken) {
+                authTokens.remove(authToken);
+            }
+        }
+    }
+
+    /**
+     * Clears all the AuthTokens in the database.
+     */
+    public void clear() throws DataAccessException {
+        authTokens = new HashSet<>();
     }
 
     /**
@@ -52,8 +69,12 @@ public class AuthDAO {
      * @param authToken The AuthToken to find
      * @return true if found, otherwise return false
      */
-    public boolean findAuthToken(AuthToken authToken) {
-        // TODO
-        return false;
+    public AuthToken findAuthToken(String authToken) {
+        for (AuthToken at : authTokens) {
+            if (Objects.equals(at.getAuthCode(), authToken)) {
+                return at;
+            }
+        }
+        return null;
     }
 }

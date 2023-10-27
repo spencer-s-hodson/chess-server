@@ -10,6 +10,11 @@ import java.util.Objects;
 
 public class Game {
     /**
+     * Counter to keep track of the game ID upon creation
+     */
+    private static int counter = 1;
+
+    /**
      * The game ID for the chess game
      */
     private int gameID;
@@ -30,17 +35,8 @@ public class Game {
      */
     private ChessGame game;
 
-    /**
-     * Constructs a Game object
-     * @param gameID The game ID for the chess game
-     * @param whiteUsername The white team's username for the chess game
-     * @param blackUsername The black team's username for the chess game
-     * @param gameName The name of the chess game
-     */
-    public Game(int gameID, String whiteUsername, String blackUsername, String gameName) {
-        this.gameID = gameID;
-        this.whiteUsername = whiteUsername;
-        this.blackUsername = blackUsername;
+    public Game(String gameName) {
+        this.gameID = counter++;
         this.gameName = gameName;
         this.game = new chess.Game();
     }

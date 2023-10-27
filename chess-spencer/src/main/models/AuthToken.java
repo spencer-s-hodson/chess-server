@@ -1,6 +1,7 @@
 package models;
 
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * This class contains information about an authorization token for a user
@@ -17,12 +18,11 @@ public class AuthToken {
 
     /**
      * Constructs an AuthToken object
-     * @param authCode authorization code
      * @param username username
      */
-    public AuthToken(String authCode, String username) {
-        this.authCode = authCode;
+    public AuthToken(String username) {
         this.username = username;
+        this.authCode = UUID.randomUUID().toString();
     }
 
     /**
