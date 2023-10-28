@@ -7,14 +7,17 @@ import java.util.Objects;
  */
 
 public class User {
+
     /**
      * The username of the user
      */
     private String username;
+
     /**
      * The password of the user
      */
     private String password;
+
     /**
      * The email of the user
      */

@@ -14,8 +14,8 @@ import java.util.Objects;
  * This class represents the service of logging in an existing user
  */
 public class LoginService {
-    private UserDAO userDAO = new UserDAO();
-    private AuthDAO authDAO = new AuthDAO();
+    private final UserDAO userDAO = new UserDAO();
+    private final AuthDAO authDAO = new AuthDAO();
 
     /**
      * Logs in an existing user and returns a response

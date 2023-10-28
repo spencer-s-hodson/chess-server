@@ -7,7 +7,7 @@ public class CreateGameRequest {
     /**
      * The name of the newly created chess game
      */
-    private String gameName;
+    private final String gameName;
 
     /**
      * Constructs a CreateGameRequest
@@ -23,13 +23,5 @@ public class CreateGameRequest {
      */
     public String getGameName() {
         return gameName;
-    }
-
-    /**
-     * Sets the name of the newly created chess game
-     * @param gameName The name of the newly created chess game
-     */
-    public void setGameName(String gameName) {
-        this.gameName = gameName;
     }
 }

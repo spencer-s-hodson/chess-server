@@ -1,12 +1,14 @@
 package handlers;
 
+import spark.Response;
+import spark.Request;
 import services.RegisterService;
 import services.requests.RegisterRequest;
 import services.responses.RegisterResponse;
-import spark.*;
+
 
 public class RegisterHandler extends Handler {
-    private RegisterService registerService = new RegisterService();
+    private final RegisterService registerService = new RegisterService();
 
     public String register(Request request, Response response) {
         RegisterRequest bodyObj = makeObj(request, RegisterRequest.class);

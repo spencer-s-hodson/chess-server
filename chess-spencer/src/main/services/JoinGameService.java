@@ -1,46 +1,31 @@
 package services;
 
-import chess.ChessGame;
 import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
 import dataAccess.GameDAO;
-import dataAccess.UserDAO;
-import models.AuthToken;
 import services.requests.JoinGameRequest;
 import services.responses.JoinGameResponse;
 
-import javax.xml.crypto.Data;
-
 /**
- * Verifies that the specified game exists, and, if a color is specified, adds the caller as the requested color to the game.
- * If no color is specified the user is joined as an observer.
- * This request is idempotent.
+ * This class represents the service of joining a chess game as a player or spectator
  */
 public class JoinGameService {
-    private GameDAO gameDAO = new GameDAO();
-    private AuthDAO authDAO = new AuthDAO();
-    private UserDAO userDAO = new UserDAO();
+    private final GameDAO gameDAO = new GameDAO();
+    private final AuthDAO authDAO = new AuthDAO();
 
     /**
-     * Attempts to join the game and returns a response
-     * @param r The request to join the game
-     * @return The response from trying to join a game
+     * Tries to join the game as a player or a spectator
+     * @param joinGameRequest The request to join the game
+     * @param authToken The auth token for verification
+     * @return A response on what happened when trying to join the game
      */
-    public JoinGameResponse joinGame(JoinGameRequest r, String authToken) {
+    public JoinGameResponse joinGame(JoinGameRequest joinGameRequest, String authToken) {
         try {
-            AuthToken at = authDAO.findAuthToken(authToken);
-            if (at == null) {
-                throw new DataAccessException("Error 401 unauthorized");
-            }
-
             String username = authDAO.findAuthToken(authToken).getUsername();
-
-            System.out.println(r.getTeamColor());
-
-            gameDAO.claimSpot(r.getTeamColor(), username, r.getGameID());
+            gameDAO.claimSpot(joinGameRequest.getTeamColor(), username, joinGameRequest.getGameID());
             return new JoinGameResponse(null);
-        }
-        catch (DataAccessException e) {
+
+        } catch (DataAccessException e) {
             return new JoinGameResponse(e.getMessage());
         }
     }

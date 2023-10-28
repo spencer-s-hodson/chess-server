@@ -12,8 +12,8 @@ import java.util.UUID;
  */
 
 public class RegisterService {
-    private UserDAO userDAO = new UserDAO();
-    private AuthDAO authDao = new AuthDAO();
+    private final UserDAO userDAO = new UserDAO();
+    private final AuthDAO authDao = new AuthDAO();
 
     /**
      * Registers a new user, and returns a response

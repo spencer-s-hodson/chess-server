@@ -7,13 +7,10 @@ import spark.Request;
 import spark.Response;
 
 public class JoinGameHandler extends Handler {
-    private JoinGameService joinGameService = new JoinGameService();
+    private final JoinGameService joinGameService = new JoinGameService();
 
     public Object joinGame(Request request, Response response) {
         JoinGameRequest bodyObj = makeObj(request, JoinGameRequest.class);
-
-        System.out.println(bodyObj.getTeamColor());
-
         response.type("application/json");
 
         String authToken = getHeader(request);

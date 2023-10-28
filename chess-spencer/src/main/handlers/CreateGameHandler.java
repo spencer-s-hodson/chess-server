@@ -7,7 +7,7 @@ import spark.Request;
 import spark.Response;
 
 public class CreateGameHandler extends Handler {
-    private CreateGameService createGameService = new CreateGameService();
+    private final CreateGameService createGameService = new CreateGameService();
 
     public String createGame(Request request, Response response) {
         CreateGameRequest bodyObj = makeObj(request, CreateGameRequest.class);

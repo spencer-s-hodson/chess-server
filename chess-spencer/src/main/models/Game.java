@@ -29,12 +29,16 @@ public class Game {
     /**
      * The name of the chess game
      */
-    private String gameName;
+    private final String gameName;
     /**
      * The logic for the chess game
      */
     private ChessGame game;
 
+    /**
+     * Constructs a chess game
+     * @param gameName The name of the chess game
+     */
     public Game(String gameName) {
         this.gameID = counter++;
         this.gameName = gameName;
@@ -87,22 +91,6 @@ public class Game {
      */
     public void setBlackUsername(String blackUsername) {
         this.blackUsername = blackUsername;
-    }
-
-    /**
-     * Returns the game's name
-     * @return The game's name
-     */
-    public String getGameName() {
-        return gameName;
-    }
-
-    /**
-     * Sets a new name for the game
-     * @param gameName The new name of the game
-     */
-    public void setGameName(String gameName) {
-        this.gameName = gameName;
     }
 
     /**

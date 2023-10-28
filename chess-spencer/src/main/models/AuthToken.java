@@ -10,7 +10,7 @@ public class AuthToken {
     /**
      * The authorization code for the AuthToken
      */
-    private String authCode;
+    private final String authCode;
     /**
      * The username for the authorization token
      */
@@ -31,14 +31,6 @@ public class AuthToken {
      */
     public String getAuthCode() {
         return authCode;
-    }
-
-    /**
-     * Sets a new authorization code
-     * @param authCode the new authorization code
-     */
-    public void setAuthCode(String authCode) {
-        this.authCode = authCode;
     }
 
     /**

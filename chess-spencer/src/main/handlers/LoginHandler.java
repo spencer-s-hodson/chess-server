@@ -2,9 +2,7 @@ package handlers;
 
 import services.LoginService;
 import services.requests.LoginRequest;
-import services.requests.RegisterRequest;
 import services.responses.LoginResponse;
-import services.responses.RegisterResponse;
 import spark.*;
 
 public class LoginHandler extends Handler {
