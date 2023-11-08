@@ -3,6 +3,7 @@ package services;
 import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
 import dataAccess.GameDAO;
+import dataAccess.UserDAO;
 import models.Game;
 import services.responses.ListGamesResponse;
 
@@ -12,8 +13,17 @@ import java.util.HashSet;
  * This class represents the service of getting a list of all of previous games
  */
 public class ListGamesService {
-    private final AuthDAO authDAO = new AuthDAO();
-    private final GameDAO gameDAO = new GameDAO();
+    private static final AuthDAO authDAO;
+    private static final GameDAO gameDAO;
+
+    static {
+        try {
+            authDAO = new AuthDAO();
+            gameDAO = new GameDAO();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     /**
      * Gets the list of all previous games played, and returns a response
@@ -22,7 +32,7 @@ public class ListGamesService {
     public ListGamesResponse listGames(String authToken) {
         try {
             authDAO.findAuthToken(authToken);
-            HashSet<Game> games = gameDAO.getGames();
+            HashSet<Game> games = gameDAO.findAllGames();
             return new ListGamesResponse(games);
 
         } catch (DataAccessException e) {

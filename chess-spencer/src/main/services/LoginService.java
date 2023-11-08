@@ -9,13 +9,23 @@ import services.requests.LoginRequest;
 import services.responses.LoginResponse;
 
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * This class represents the service of logging in an existing user
  */
 public class LoginService {
-    private final UserDAO userDAO = new UserDAO();
-    private final AuthDAO authDAO = new AuthDAO();
+    private static final UserDAO userDAO;
+    private static final AuthDAO authDAO;
+
+    static {
+        try {
+            userDAO = new UserDAO();
+            authDAO = new AuthDAO();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     /**
      * Logs in an existing user and returns a response
@@ -25,13 +35,17 @@ public class LoginService {
     public LoginResponse login(LoginRequest r) {
         try {
             User foundUser = userDAO.findUser(r.getUsername());
-            if (foundUser == null || !Objects.equals(foundUser.getPassword(), r.getPassword())) {
-                throw new DataAccessException("Error 401 unauthorized");
+            if (foundUser == null) {
+                throw new DataAccessException("Error 401 unauthorized, user does not exist");
             }
 
-            AuthToken newAuthToken = new AuthToken(foundUser.getUsername());
+            if (!Objects.equals(foundUser.getPassword(), r.getPassword())) {
+                throw new DataAccessException("Error 401 unauthorized, password is incorrect");
+            }
+
+            AuthToken newAuthToken = new AuthToken(UUID.randomUUID().toString(), foundUser.getUsername());
             authDAO.addAuthToken(newAuthToken);
-            return new LoginResponse(foundUser.getUsername(), newAuthToken.getAuthCode());
+            return new LoginResponse(foundUser.getUsername(), newAuthToken.getAuthToken());
 
         } catch (DataAccessException e) {
             return new LoginResponse(e.getMessage());

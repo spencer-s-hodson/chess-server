@@ -2,13 +2,17 @@ package chess;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 public class Pawn implements ChessPiece {
 
     private ChessGame.TeamColor teamColor;
+    private PieceType pieceType;
+
     public Pawn(ChessGame.TeamColor teamColor) {
         this.teamColor = teamColor;
+        this.pieceType = PieceType.PAWN;
     }
     @Override
     public ChessGame.TeamColor getTeamColor() {
@@ -148,19 +152,22 @@ public class Pawn implements ChessPiece {
                 }
             }
         }
-
-
-
-
-
-
-
-
-
-
         return validMoves;
     }
     private boolean isValidSquare(int row, int col) {
         return row >= 1 && row <= 8 && col >= 1 && col <= 8;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Pawn pawn = (Pawn) o;
+        return teamColor == pawn.teamColor && pieceType == pawn.pieceType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(teamColor, pieceType);
     }
 }

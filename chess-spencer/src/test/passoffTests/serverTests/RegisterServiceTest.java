@@ -11,8 +11,17 @@ import services.requests.RegisterRequest;
 import services.responses.RegisterResponse;
 
 public class RegisterServiceTest {
-    private static final UserDAO userDAO = new UserDAO();
-    private static final AuthDAO authDAO = new AuthDAO();
+    private static final UserDAO userDAO;
+    private static final AuthDAO authDAO;
+
+    static {
+        try {
+            userDAO = new UserDAO();
+            authDAO = new AuthDAO();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
     private static final RegisterService registerService = new RegisterService();
     private static final User testUser = new User("username", "password", "email");
 
@@ -21,8 +30,12 @@ public class RegisterServiceTest {
         Assertions.assertDoesNotThrow(userDAO::clear, "User DAO did not clear successfully");
         Assertions.assertDoesNotThrow(authDAO::clear, "Auth DAO did not clear successfully");
 
-        Assertions.assertTrue(userDAO.getUsers().isEmpty(), "User DAO is not empty");
-        Assertions.assertTrue(authDAO.getAuthTokens().isEmpty(), "Auth DAO is not empty");
+        Assertions.assertTrue(Assertions.assertDoesNotThrow(userDAO::findAllUsers).isEmpty(), "User DAO is not empty");
+        Assertions.assertTrue(Assertions.assertDoesNotThrow(authDAO::findAllAuthTokens).isEmpty(), "Auth DAO is not empty");
+
+
+
+
     }
 
     @Test
@@ -33,7 +46,7 @@ public class RegisterServiceTest {
 
         Assertions.assertEquals(testUser.getUsername(), registerResponse.getUsername(), "The username was added improperly");
         Assertions.assertEquals(testUser.getUsername(), Assertions.assertDoesNotThrow(() -> authDAO.findAuthToken(registerResponse.getAuthToken())).getUsername(), "Auth token not added to DAO");
-        Assertions.assertEquals(testUser, Assertions.assertDoesNotThrow(() -> userDAO.getUserByUsername(testUser.getUsername())), "User not added to DAO");
+        Assertions.assertEquals(testUser, Assertions.assertDoesNotThrow(() -> userDAO.findUser(testUser.getUsername())), "User not added to DAO");
     }
 
     @Test
@@ -41,6 +54,6 @@ public class RegisterServiceTest {
     public void registerFail() {
         RegisterRequest registerRequest = new RegisterRequest(testUser.getUsername(), null, testUser.getEmail());
         registerService.register(registerRequest);
-        Assertions.assertTrue(userDAO.getUsers().isEmpty());
+        Assertions.assertTrue(Assertions.assertDoesNotThrow(userDAO::findAllUsers).isEmpty());
     }
 }

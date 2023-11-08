@@ -10,10 +10,18 @@ import java.util.UUID;
 /**
  * This class represents the registration of a new user.
  */
-
 public class RegisterService {
-    private final UserDAO userDAO = new UserDAO();
-    private final AuthDAO authDao = new AuthDAO();
+    private static final UserDAO userDAO;
+    private static final AuthDAO authDAO;
+
+    static {
+        try {
+            userDAO = new UserDAO();
+            authDAO = new AuthDAO();
+        } catch (DataAccessException ex) {
+            throw new RuntimeException(ex.getMessage());
+        }
+    }
 
     /**
      * Registers a new user, and returns a response
@@ -25,10 +33,10 @@ public class RegisterService {
             User newUser = new User(r.getUsername(), r.getPassword(), r.getEmail());
             userDAO.addUser(newUser);
 
-            AuthToken newAuthToken = new AuthToken(newUser.getUsername());
-            authDao.addAuthToken(newAuthToken);
+            AuthToken newAuthToken = new AuthToken(UUID.randomUUID().toString(), newUser.getUsername());
+            authDAO.addAuthToken(newAuthToken);
 
-            return new RegisterResponse(newUser.getUsername(), newAuthToken.getAuthCode());
+            return new RegisterResponse(newUser.getUsername(), newAuthToken.getAuthToken());
 
         } catch (DataAccessException e) {
             return new RegisterResponse(e.getMessage());

@@ -9,8 +9,15 @@ import services.responses.LogoutResponse;
  * This class represents the service of logging a user out, represented by an authToken
  */
 public class LogoutService {
-    private final AuthDAO authDAO = new AuthDAO();
+    private static final AuthDAO authDAO;
 
+    static {
+        try {
+            authDAO = new AuthDAO();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
     /**
      * Submits a request to log the user out, and returns a response
      * @return The response from logging out

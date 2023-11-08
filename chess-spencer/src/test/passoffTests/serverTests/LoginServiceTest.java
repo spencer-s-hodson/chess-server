@@ -11,12 +11,20 @@ import services.LoginService;
 import services.RegisterService;
 import services.requests.LoginRequest;
 import services.requests.RegisterRequest;
-import services.responses.LoginResponse;
 
 
 public class LoginServiceTest {
-    private static final UserDAO userDAO = new UserDAO();
-    private static final AuthDAO authDAO = new AuthDAO();
+    private static final UserDAO userDAO;
+    private static final AuthDAO authDAO;
+
+    static {
+        try {
+            userDAO = new UserDAO();
+            authDAO = new AuthDAO();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
     private static final RegisterService registerService = new RegisterService();
     private static final LoginService loginService = new LoginService();
     private static final User testUser = new User("username", "password", "email");
@@ -26,8 +34,8 @@ public class LoginServiceTest {
         Assertions.assertDoesNotThrow(userDAO::clear, "User DAO did not clear successfully");
         Assertions.assertDoesNotThrow(authDAO::clear, "Auth DAO did not clear successfully");
 
-        Assertions.assertTrue(userDAO.getUsers().isEmpty(), "User DAO is not empty");
-        Assertions.assertTrue(authDAO.getAuthTokens().isEmpty(), "Auth DAO is not empty");
+        Assertions.assertTrue(Assertions.assertDoesNotThrow(userDAO::findAllUsers).isEmpty(), "User DAO is not empty");
+        Assertions.assertTrue(Assertions.assertDoesNotThrow(authDAO::findAllAuthTokens).isEmpty(), "Auth DAO is not empty");
     }
     @Test
     @DisplayName("Successful Login")
@@ -38,7 +46,7 @@ public class LoginServiceTest {
         LoginRequest loginRequest = new LoginRequest(testUser.getUsername(), testUser.getPassword());
         Assertions.assertDoesNotThrow(() -> loginService.login(loginRequest), "Login failure");
 
-        Assertions.assertTrue(userDAO.getUsers().size() == 1 && authDAO.getAuthTokens().size() == 2, "Auth token not added");
+        Assertions.assertTrue(Assertions.assertDoesNotThrow(userDAO::findAllUsers).size() == 1 && Assertions.assertDoesNotThrow(authDAO::findAllAuthTokens).size() == 2, "Auth token not added");
     }
 
     @Test
@@ -50,7 +58,7 @@ public class LoginServiceTest {
         LoginRequest loginRequest = new LoginRequest("Bad Username", testUser.getPassword());
         Assertions.assertDoesNotThrow(() -> loginService.login(loginRequest), "Login failure");
 
-        Assertions.assertFalse(userDAO.getUsers().size() == 1 && authDAO.getAuthTokens().size() == 2);
+        Assertions.assertFalse(Assertions.assertDoesNotThrow(userDAO::findAllUsers).size() == 1 && Assertions.assertDoesNotThrow(authDAO::findAllAuthTokens).size() == 2);
     }
 
 

@@ -2,11 +2,23 @@ package chess;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
+import java.util.Objects;
 
 public class Game implements ChessGame {
     private ChessBoard board;
     private TeamColor currTurn;
+
+    public Game(Board board, TeamColor currTurn) {
+        this.board = board;
+        this.currTurn = currTurn;
+    }
+
+    public Game() {
+        this.board = new Board();
+        this.board.resetBoard();
+        currTurn = TeamColor.WHITE;
+    }
+
     @Override
     public TeamColor getTeamTurn() {
         return currTurn;
@@ -166,5 +178,19 @@ public class Game implements ChessGame {
     @Override
     public ChessBoard getBoard() {
         return board;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Game game = (Game) o;
+        return board.equals(game.board) && currTurn == game.currTurn;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(board, currTurn);
     }
 }

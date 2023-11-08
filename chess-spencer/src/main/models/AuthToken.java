@@ -7,10 +7,12 @@ import java.util.UUID;
  * This class contains information about an authorization token for a user
  */
 public class AuthToken {
+
     /**
-     * The authorization code for the AuthToken
+     * The authorization token for the AuthToken
      */
-    private final String authCode;
+    private final String authToken;
+
     /**
      * The username for the authorization token
      */
@@ -20,17 +22,17 @@ public class AuthToken {
      * Constructs an AuthToken object
      * @param username username
      */
-    public AuthToken(String username) {
+    public AuthToken(String authToken, String username) {
+        this.authToken = authToken;
         this.username = username;
-        this.authCode = UUID.randomUUID().toString();
     }
 
     /**
      * Returns the authorization code
      * @return the authorization code
      */
-    public String getAuthCode() {
-        return authCode;
+    public String getAuthToken() {
+        return authToken;
     }
 
     /**
@@ -52,7 +54,7 @@ public class AuthToken {
     @Override
     public String toString() {
         return "AuthToken{" +
-                "authCode='" + authCode + '\'' +
+                "authCode='" + authToken + '\'' +
                 ", username='" + username + '\'' +
                 '}';
     }
@@ -62,11 +64,11 @@ public class AuthToken {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AuthToken authToken = (AuthToken) o;
-        return Objects.equals(authCode, authToken.authCode) && Objects.equals(username, authToken.username);
+        return Objects.equals(this.authToken, authToken.authToken) && Objects.equals(username, authToken.username);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(authCode, username);
+        return Objects.hash(authToken, username);
     }
 }

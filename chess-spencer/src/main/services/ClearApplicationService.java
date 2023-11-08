@@ -7,9 +7,19 @@ import services.responses.ClearApplicationResponse;
  * Clears the database. Removes all users, games, and authTokens.
  */
 public class ClearApplicationService {
-    private final UserDAO userDAO = new UserDAO();
-    private final AuthDAO authToken = new AuthDAO();
-    private final GameDAO gameDAO = new GameDAO();
+    private static final UserDAO userDAO;
+    private static final AuthDAO authDAO;
+    private static final GameDAO gameDAO;
+
+    static {
+        try {
+            userDAO = new UserDAO();
+            authDAO = new AuthDAO();
+            gameDAO = new GameDAO();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
      /**
      * Clear all data from the database, and returns a response
@@ -18,12 +28,12 @@ public class ClearApplicationService {
     public ClearApplicationResponse clearApplication() {
         try {
             userDAO.clear();
-            authToken.clear();
+            authDAO.clear();
             gameDAO.clear();
 
-            return new ClearApplicationResponse("nice job");
-        } catch (DataAccessException e) {
-            return new ClearApplicationResponse("Error: " + e.getMessage());
+            return new ClearApplicationResponse("Database Clear");
+        } catch (DataAccessException ex) {
+            return new ClearApplicationResponse(ex.getMessage());
         }
     }
 }

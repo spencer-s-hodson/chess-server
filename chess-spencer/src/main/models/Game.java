@@ -12,7 +12,7 @@ public class Game {
     /**
      * Counter to keep track of the game ID upon creation
      */
-    private static int counter = 1;
+//    private static int counter = 1;
 
     /**
      * The game ID for the chess game
@@ -33,16 +33,31 @@ public class Game {
     /**
      * The logic for the chess game
      */
-    private ChessGame game;
+    private chess.Game game;
 
     /**
      * Constructs a chess game
      * @param gameName The name of the chess game
      */
-    public Game(String gameName) {
-        this.gameID = counter++;
+//    public Game(String gameName) {
+//        this.gameID = counter++;
+//        this.gameName = gameName;
+//        this.game = new chess.Game();
+//    }
+
+    public Game(int gameID, String whiteUsername, String blackUsername, String gameName, chess.Game game) {
+        this.gameID = gameID;
+        this.whiteUsername = whiteUsername;
+        this.blackUsername = blackUsername;
         this.gameName = gameName;
-        this.game = new chess.Game();
+        this.game = game;
+    }
+
+    public Game(String gameName, chess.Game game) {
+        this.whiteUsername = null;
+        this.blackUsername = null;
+        this.gameName = gameName;
+        this.game = game;
     }
 
     /**
@@ -52,6 +67,10 @@ public class Game {
     public int getGameID() {
         return gameID;
     }
+
+
+
+
 
     /**
      * Sets a new game ID
@@ -93,11 +112,16 @@ public class Game {
         this.blackUsername = blackUsername;
     }
 
+
+    public String getGameName() {
+        return gameName;
+    }
+
     /**
      * Returns the all logic and board for the chess game
      * @return The logic and board for the chess game
      */
-    public ChessGame getGame() {
+    public chess.Game getGame() {
         return game;
     }
 
@@ -105,7 +129,7 @@ public class Game {
      * Sets the logic and a new board for the chess game
      * @param game The logic and new board for the chess game
      */
-    public void setGame(ChessGame game) {
+    public void setGame(chess.Game game) {
         this.game = game;
     }
 
@@ -125,7 +149,11 @@ public class Game {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Game game1 = (Game) o;
-        return gameID == game1.gameID && Objects.equals(whiteUsername, game1.whiteUsername) && Objects.equals(blackUsername, game1.blackUsername) && Objects.equals(gameName, game1.gameName) && Objects.equals(game, game1.game);
+        return gameID == game1.gameID
+                && Objects.equals(whiteUsername, game1.whiteUsername)
+                && Objects.equals(blackUsername, game1.blackUsername)
+                && Objects.equals(gameName, game1.gameName)
+                && game.equals(game1.game);
     }
 
     @Override

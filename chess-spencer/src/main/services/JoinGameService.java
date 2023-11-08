@@ -3,6 +3,7 @@ package services;
 import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
 import dataAccess.GameDAO;
+import dataAccess.UserDAO;
 import services.requests.JoinGameRequest;
 import services.responses.JoinGameResponse;
 
@@ -10,8 +11,17 @@ import services.responses.JoinGameResponse;
  * This class represents the service of joining a chess game as a player or spectator
  */
 public class JoinGameService {
-    private final GameDAO gameDAO = new GameDAO();
-    private final AuthDAO authDAO = new AuthDAO();
+    private static final AuthDAO authDAO;
+    private static final GameDAO gameDAO;
+
+    static {
+        try {
+            authDAO = new AuthDAO();
+            gameDAO = new GameDAO();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     /**
      * Tries to join the game as a player or a spectator

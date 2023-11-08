@@ -12,42 +12,52 @@ import services.ClearApplicationService;
 
 
 public class ClearApplicationServiceTest {
-    private static final UserDAO userDAO = new UserDAO();
-    private static final AuthDAO authDAO = new AuthDAO();
-    private static final GameDAO gameDAO = new GameDAO();
+    private static final UserDAO userDAO;
+    private static final AuthDAO authDAO;
+    private static final GameDAO gameDAO;
+
+    static {
+        try {
+            userDAO = new UserDAO();
+            authDAO = new AuthDAO();
+            gameDAO = new GameDAO();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
     private static final ClearApplicationService clearApplicationService = new ClearApplicationService();
 
     @BeforeEach
-    public void setup() {
+    public void setup() throws DataAccessException {
         Assertions.assertDoesNotThrow(userDAO::clear, "User DAO did not clear successfully");
         Assertions.assertDoesNotThrow(authDAO::clear, "Auth DAO did not clear successfully");
         Assertions.assertDoesNotThrow(gameDAO::clear, "Game DAO did not clear successfully");
 
-        Assertions.assertTrue(userDAO.getUsers().isEmpty(), "User DAO is not empty");
-        Assertions.assertTrue(authDAO.getAuthTokens().isEmpty(), "Auth DAO is not empty");
-        Assertions.assertTrue(gameDAO.getGames().isEmpty(), "Game DAO is not empty");
+        Assertions.assertTrue(Assertions.assertDoesNotThrow(userDAO::findAllUsers).isEmpty(), "User DAO is not empty");
+        Assertions.assertTrue(Assertions.assertDoesNotThrow(authDAO::findAllAuthTokens).isEmpty(), "Auth DAO is not empty");
+        Assertions.assertTrue(gameDAO.findAllGames().isEmpty(), "Game DAO is not empty");
     }
 
     @Test
     @DisplayName("Clear Data")
-    public void clearData() {
+    public void clearData() throws DataAccessException {
         User testUser = new User("username", "password", "email");
         Assertions.assertDoesNotThrow(() -> userDAO.addUser(testUser), "User not added");
 
-        AuthToken testAuthToken = new AuthToken("username");
+        AuthToken testAuthToken = new AuthToken("username", "testAuthToken");
         Assertions.assertDoesNotThrow(() -> authDAO.addAuthToken(testAuthToken), "Auth token not added");
 
-        Game testGame = new Game("game name");
+        Game testGame = new Game("game name", new chess.Game());
         Assertions.assertDoesNotThrow(() ->gameDAO.addGame(testGame), "Game not added");
 
-        Assertions.assertFalse(userDAO.getUsers().isEmpty(), "User DAO is empty");
-        Assertions.assertFalse(authDAO.getAuthTokens().isEmpty(), "Auth DAO is empty");
-        Assertions.assertFalse(gameDAO.getGames().isEmpty(), "Game DAO is empty");
+        Assertions.assertFalse(Assertions.assertDoesNotThrow(userDAO::findAllUsers).isEmpty(), "User DAO is empty");
+        Assertions.assertFalse(Assertions.assertDoesNotThrow(authDAO::findAllAuthTokens).isEmpty(), "Auth DAO is empty");
+        Assertions.assertFalse(gameDAO.findAllGames().isEmpty(), "Game DAO is empty");
 
         Assertions.assertDoesNotThrow(clearApplicationService::clearApplication);
 
-        Assertions.assertTrue(userDAO.getUsers().isEmpty(), "User DAO is not empty");
-        Assertions.assertTrue(authDAO.getAuthTokens().isEmpty(), "Auth DAO is not empty");
-        Assertions.assertTrue(gameDAO.getGames().isEmpty(), "Game DAO is not empty");
+        Assertions.assertTrue(Assertions.assertDoesNotThrow(userDAO::findAllUsers).isEmpty(), "User DAO is not empty");
+        Assertions.assertTrue(Assertions.assertDoesNotThrow(authDAO::findAllAuthTokens).isEmpty(), "Auth DAO is not empty");
+        Assertions.assertTrue(gameDAO.findAllGames().isEmpty(), "Game DAO is not empty");
     }
 }

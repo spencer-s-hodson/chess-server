@@ -3,6 +3,7 @@ package services;
 import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
 import dataAccess.GameDAO;
+import dataAccess.UserDAO;
 import models.Game;
 import services.requests.CreateGameRequest;
 import services.responses.CreateGameResponse;
@@ -11,8 +12,17 @@ import services.responses.CreateGameResponse;
  * This class represents the service that creates a new chess game to be played
  */
 public class CreateGameService {
-    private final AuthDAO authDAO = new AuthDAO();
-    private final GameDAO gameDAO = new GameDAO();
+    private static final AuthDAO authDAO;
+    private static final GameDAO gameDAO;
+
+    static {
+        try {
+            authDAO = new AuthDAO();
+            gameDAO = new GameDAO();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     /**
      * Creates the new game, and return a response
@@ -26,9 +36,10 @@ public class CreateGameService {
             }
 
             authDAO.findAuthToken(authToken);
-            Game newGame = new Game(createGameRequest.getGameName());
+            models.Game newGame = new Game(createGameRequest.getGameName(), new chess.Game());
 
-            gameDAO.addGame(newGame);
+            int gameID = gameDAO.addGame(newGame);
+            newGame.setGameID(gameID);
             return new CreateGameResponse(newGame.getGameID());
 
         } catch (DataAccessException e) {
