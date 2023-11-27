@@ -2,8 +2,8 @@ package services;
 
 import dataAccess.*;
 import models.*;
-import services.requests.RegisterRequest;
-import services.responses.RegisterResponse;
+import requests.RegisterRequest;
+import responses.RegisterResponse;
 
 import java.util.UUID;
 

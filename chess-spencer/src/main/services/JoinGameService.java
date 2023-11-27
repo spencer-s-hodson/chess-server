@@ -4,8 +4,8 @@ import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
 import dataAccess.GameDAO;
 import dataAccess.UserDAO;
-import services.requests.JoinGameRequest;
-import services.responses.JoinGameResponse;
+import requests.JoinGameRequest;
+import responses.JoinGameResponse;
 
 /**
  * This class represents the service of joining a chess game as a player or spectator

@@ -1,12 +1,9 @@
 package serialization;
 
-import chess.Board;
 import chess.ChessGame;
 import chess.Game;
 import com.google.gson.*;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
+
 import java.lang.reflect.Type;
 
 public class ChessGameAdapter implements JsonDeserializer<chess.Game> {

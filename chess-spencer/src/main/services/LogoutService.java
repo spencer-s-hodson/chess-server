@@ -3,7 +3,7 @@ package services;
 import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
 import models.AuthToken;
-import services.responses.LogoutResponse;
+import responses.LogoutResponse;
 
 /**
  * This class represents the service of logging a user out, represented by an authToken

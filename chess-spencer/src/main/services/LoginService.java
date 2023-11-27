@@ -5,8 +5,8 @@ import dataAccess.DataAccessException;
 import dataAccess.UserDAO;
 import models.AuthToken;
 import models.User;
-import services.requests.LoginRequest;
-import services.responses.LoginResponse;
+import requests.LoginRequest;
+import responses.LoginResponse;
 
 import java.util.Objects;
 import java.util.UUID;

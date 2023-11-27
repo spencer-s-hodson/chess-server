@@ -3,9 +3,8 @@ package services;
 import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
 import dataAccess.GameDAO;
-import dataAccess.UserDAO;
 import models.Game;
-import services.responses.ListGamesResponse;
+import responses.ListGamesResponse;
 
 import java.util.HashSet;
 

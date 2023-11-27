@@ -6,7 +6,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
-import java.util.Objects;
 
 /**
  * The class provides methods to access and manipulate User objects in the data store.

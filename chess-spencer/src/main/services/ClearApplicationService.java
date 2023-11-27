@@ -1,7 +1,7 @@
 package services;
 
 import dataAccess.*;
-import services.responses.ClearApplicationResponse;
+import responses.ClearApplicationResponse;
 
 /**
  * Clears the database. Removes all users, games, and authTokens.

@@ -1,7 +1,6 @@
 package dataAccess;
 
 import chess.ChessGame;
-import com.google.gson.Gson;
 import models.Game;
 import serialization.SerializationHelper;
 

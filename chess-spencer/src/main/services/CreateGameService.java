@@ -3,10 +3,9 @@ package services;
 import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
 import dataAccess.GameDAO;
-import dataAccess.UserDAO;
 import models.Game;
-import services.requests.CreateGameRequest;
-import services.responses.CreateGameResponse;
+import requests.CreateGameRequest;
+import responses.CreateGameResponse;
 
 /**
  * This class represents the service that creates a new chess game to be played

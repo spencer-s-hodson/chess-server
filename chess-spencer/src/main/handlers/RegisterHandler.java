@@ -3,8 +3,8 @@ package handlers;
 import spark.Response;
 import spark.Request;
 import services.RegisterService;
-import services.requests.RegisterRequest;
-import services.responses.RegisterResponse;
+import requests.RegisterRequest;
+import responses.RegisterResponse;
 
 
 public class RegisterHandler extends Handler {
