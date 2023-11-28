@@ -4,6 +4,11 @@ import java.util.Objects;
 import java.util.Scanner;
 
 public class Main {
+    /**
+     * Nice.
+     * @param args any system arguments that would appear.
+     * @throws Exception any exception that might be thrown.
+     */
     public static void main(String[] args) throws Exception {
         System.out.println("\uD83D\uDC51 Welcome to 240 chess. Type Help to get started. \uD83D\uDC51");
 
@@ -17,7 +22,7 @@ public class Main {
             if (Objects.equals(response.toLowerCase(), "help")) {
                 // some method that will go to the next steps
                 PreLoginUI preLoginUI = new PreLoginUI();
-                preLoginUI.help(curr);
+                preLoginUI.help();
                 break;
             } else {
                 System.out.println("invalid command\n");

@@ -10,11 +10,11 @@ import dataAccess.*;
 import services.ListGamesService;
 import services.LoginService;
 import services.RegisterService;
-import services.requests.LoginRequest;
-import services.requests.RegisterRequest;
-import services.responses.ListGamesResponse;
-import services.responses.LoginResponse;
-import services.responses.RegisterResponse;
+import requests.LoginRequest;
+import requests.RegisterRequest;
+import responses.ListGamesResponse;
+import responses.LoginResponse;
+import responses.RegisterResponse;
 
 public class ListGamesServiceTest {
     private static final GameDAO gameDAO;

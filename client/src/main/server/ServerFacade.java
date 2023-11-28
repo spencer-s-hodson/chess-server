@@ -1,51 +1,79 @@
 package server;
 
 import com.google.gson.Gson;
-import requests.RegisterRequest;
-import responses.RegisterResponse;
+import com.google.gson.GsonBuilder;
+import requests.*;
+import responses.*;
+import serialization.ChessBoardAdapter;
+import serialization.ChessGameAdapter;
+import serialization.ChessPieceAdapter;
+
+import java.io.IOException;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
-import java.util.Map;
 
 
 public class ServerFacade {
     public RegisterResponse register(RegisterRequest registerRequest) throws Exception {
-        // this needs to call sendRequest and receive response
         String url = "http://localhost:8080/user";
         String method = "POST";
         String body = new Gson().toJson(registerRequest);
-        System.out.println(body);
-
-        HttpURLConnection http = sendRequest(url, method, body);
-
-//        HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
-//
-//        connection.setRequestMethod("POST");
-//        connection.setRequestProperty("Content-Type", "application/json; utf-8");
-//        connection.setRequestProperty("Accept", "application/json");
-//        connection.setDoOutput(true);
-//
-//        String jsonInputString = String.format("{\"username\": \"%s\", \"password\": \"%s\", \"email\": \"%s\"}",
-//                username, password, email);
-//        // connection.connect()
-//
-//        OutputStream outputStream = connection.getOutputStream();
-//        // create the header and body of the request
-//        // get the response and do stuff with that
-        return null;
+        return sendRequest(url, method, body, RegisterResponse.class, null);
     }
 
-    private static HttpURLConnection sendRequest(String url, String method, String body) throws Exception {
+    public LoginResponse login(LoginRequest loginRequest) throws Exception {
+        String url = "http://localhost:8080/session";
+        String method = "POST";
+        String body = new Gson().toJson(loginRequest);
+        return sendRequest(url, method, body, LoginResponse.class, null);
+    }
+
+    public CreateGameResponse createGame(CreateGameRequest createGameRequest, String authToken) throws Exception {
+        String url = "http://localhost:8080/game";
+        String method = "POST";
+        String body = new Gson().toJson(createGameRequest);
+        return sendRequest(url, method, body, CreateGameResponse.class, authToken);
+    }
+
+    public ListGamesResponse listGames(String authToken) throws Exception {
+        String url = "http://localhost:8080/game";
+        String method = "GET";
+        return sendRequest(url, method, null, ListGamesResponse.class, authToken);
+    }
+
+    public JoinGameResponse joinGame(JoinGameRequest joinGameRequest, String authToken) throws Exception {
+        String url = "http://localhost:8080/game";
+        String method = "PUT";
+        String body = new Gson().toJson(joinGameRequest);
+        return sendRequest(url, method, body, JoinGameResponse.class, authToken);
+    }
+
+    public LogoutResponse logout(String authToken) throws Exception {
+        String url = "http://localhost:8080/session";
+        String method = "DELETE";
+        return sendRequest(url, method, null, LogoutResponse.class, authToken);
+    }
+
+    private static <T> T sendRequest(String url, String method, String body, Class<T> responseClass, String authToken) throws Exception {
         URI uri = new URI(url);
         HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
         http.setRequestMethod(method);
-        writeRequestBody(body, http);
+        if (body != null) {
+            http.addRequestProperty("Content-Type", "application/json; utf-8");
+            http.addRequestProperty("Accept", "application/json");
+        }
+        if (authToken != null) {
+            http.addRequestProperty("authorization", authToken);
+        }
+        if (body != null) {
+            writeRequestBody(body, http);
+        }
         http.connect();
         System.out.printf("= Request =========\n[%s] %s\n\n%s\n\n", method, url, body);
-        return http;
+        return receiveResponse(http, responseClass);
     }
 
     private static void writeRequestBody(String body, HttpURLConnection http) throws Exception {
@@ -57,20 +85,39 @@ public class ServerFacade {
         }
     }
 
-    private static void receiveResponse(HttpURLConnection http) throws Exception {
+    private static <T> T receiveResponse(HttpURLConnection http, Class<T> responseClass) throws Exception {
         var statusCode = http.getResponseCode();
         var statusMessage = http.getResponseMessage();
 
-        Object responseBody = readResponseBody(http);
+        T responseBody = readResponseBody(http, responseClass);
         System.out.printf("= Response =========\n[%d] %s\n\n%s\n\n", statusCode, statusMessage, responseBody);
+        return responseBody;
     }
 
-    private static Object readResponseBody(HttpURLConnection http) throws Exception {
-        Object responseBody = "";
+    private static <T> T readResponseBody(HttpURLConnection http, Class<T> responseClass) throws Exception {
+        T responseBody;
         try (InputStream respBody = http.getInputStream()) {
             InputStreamReader inputStreamReader = new InputStreamReader(respBody);
-            responseBody = new Gson().fromJson(inputStreamReader, Map.class);
+
+            GsonBuilder builder = new GsonBuilder();
+            builder.registerTypeAdapter(chess.Game.class, new ChessGameAdapter());
+            builder.registerTypeAdapter(chess.Board.class, new ChessBoardAdapter());
+            builder.registerTypeAdapter(chess.ChessPiece.class, new ChessPieceAdapter());
+            Gson gson = builder.create();
+
+            responseBody = gson.fromJson(inputStreamReader, responseClass);
         }
         return responseBody;
+    }
+
+    private static String readString(InputStream is) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        InputStreamReader sr = new InputStreamReader(is);
+        char[] buf = new char[1024];
+        int len;
+        while ((len = sr.read(buf)) > 0) {
+            sb.append(buf, 0, len);
+        }
+        return sb.toString();
     }
 }

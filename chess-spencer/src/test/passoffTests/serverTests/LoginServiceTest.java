@@ -9,8 +9,8 @@ import org.junit.jupiter.api.Test;
 import dataAccess.*;
 import services.LoginService;
 import services.RegisterService;
-import services.requests.LoginRequest;
-import services.requests.RegisterRequest;
+import requests.LoginRequest;
+import requests.RegisterRequest;
 
 
 public class LoginServiceTest {
