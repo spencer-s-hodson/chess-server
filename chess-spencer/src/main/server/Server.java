@@ -46,6 +46,9 @@ public class Server {
         Spark.port(8080);
         System.out.println("Listening on port 8080");
 
+        Spark.webSocket("/connect", GameConnectionHandler.class);
+
+
         Spark.externalStaticFileLocation("web");
 
         routes();

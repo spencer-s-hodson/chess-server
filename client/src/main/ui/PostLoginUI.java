@@ -61,12 +61,12 @@ public class PostLoginUI {
                         default -> null;
                     };
                     joinGame(id, teamColor);
-                    break label;
+                    break;
                 case "observe":
                     // joins the game as a spectator
                     int gameID = scanner.nextInt();
                     observeGame(gameID);
-                    break label;
+                    break;
                 case "logout":
                     // logs out the logged-in user
                     logout();
@@ -104,8 +104,11 @@ public class PostLoginUI {
             try {
                 JoinGameResponse joinGameResponse = server.joinGame(joinGameRequest, authToken);
                 System.out.printf("Success: You've joined game #%d as a player. Good luck!\n", gameID);
-                GameplayUI.drawChessBoardWithBlackOnTop();
-                GameplayUI.drawChessBoardWithWhiteOnTop();
+                if (teamColor == ChessGame.TeamColor.WHITE) {
+                    GameplayUI.drawChessBoardWithBlackOnTop();
+                } else {
+                    GameplayUI.drawChessBoardWithWhiteOnTop();
+                }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -116,7 +119,6 @@ public class PostLoginUI {
             JoinGameResponse joinGameResponse = server.joinGame(joinGameRequest, authToken);
             System.out.printf("Success: You've joined game #%d as an observer.\n", gameID);
             GameplayUI.drawChessBoardWithBlackOnTop();
-            GameplayUI.drawChessBoardWithWhiteOnTop();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
