@@ -12,13 +12,13 @@ import services.CreateGameService;
 import services.JoinGameService;
 import services.LoginService;
 import services.RegisterService;
-import services.requests.CreateGameRequest;
-import services.requests.JoinGameRequest;
-import services.requests.LoginRequest;
-import services.requests.RegisterRequest;
-import services.responses.CreateGameResponse;
-import services.responses.LoginResponse;
-import services.responses.RegisterResponse;
+import requests.CreateGameRequest;
+import requests.JoinGameRequest;
+import requests.LoginRequest;
+import requests.RegisterRequest;
+import responses.CreateGameResponse;
+import responses.LoginResponse;
+import responses.RegisterResponse;
 
 public class JoinGameServiceTest {
     private static final RegisterService registerService = new RegisterService();

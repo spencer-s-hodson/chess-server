@@ -1,12 +1,19 @@
 package ui;
 
+import chess.ChessGame;
+import requests.CreateGameRequest;
+import requests.JoinGameRequest;
+import responses.CreateGameResponse;
+import responses.JoinGameResponse;
+import responses.ListGamesResponse;
+import responses.LogoutResponse;
 import server.ServerFacade;
-
 import java.util.Scanner;
 
 public class PostLoginUI {
     public static final ServerFacade server = new ServerFacade();
-    public void login(String curr) {
+    public String authToken;
+    public void login() {
         String helpString = """
                            create <NAME> - a game
                            list - games
@@ -16,6 +23,8 @@ public class PostLoginUI {
                            quit - playing chess
                            help - with possible commands
                         """;
+        String curr = "[LOGGED_IN] >>> ";
+
 
         label:
         while (true) {
@@ -45,9 +54,12 @@ public class PostLoginUI {
                 case "join":
                     // joins a previously created game as a player
                     int id = scanner.nextInt();
-                    // this isn't supposed to be a string though, right?
-                    // [WHITE|BLACK|<empty>] confused
-                    String teamColor = scanner.next();
+                    String teamColorAsString = scanner.next();
+                    ChessGame.TeamColor teamColor = switch (teamColorAsString.toLowerCase()) {
+                        case "white" -> ChessGame.TeamColor.WHITE;
+                        case "black" -> ChessGame.TeamColor.BLACK;
+                        default -> null;
+                    };
                     joinGame(id, teamColor);
                     break;
                 case "observe":
@@ -58,7 +70,7 @@ public class PostLoginUI {
                 case "logout":
                     // logs out the logged-in user
                     logout();
-                    break;
+                    break label;
                 default:
                     System.out.println("invalid command");
                     break;
@@ -67,13 +79,64 @@ public class PostLoginUI {
     }
 
     private void createGame(String gameName) {
+        CreateGameRequest createGameRequest = new CreateGameRequest(gameName);
+        try {
+            CreateGameResponse createGameResponse = server.createGame(createGameRequest, authToken);
+            System.out.printf("Success: a game has been created with the gameID as $d", createGameResponse.getGameID());
+        } catch (Exception e) {
+            throw new RuntimeException("that didn't work");
+        }
     }
     private void listGames() {
+        try {
+            ListGamesResponse listGamesResponse = server.listGames(authToken);
+            System.out.println("Success: Here is the list of all the existing games:\n");
+            for (models.Game game : listGamesResponse.getGames()) {
+                System.out.println(game);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
-    private void joinGame(int id, String teamColor) {
+    private void joinGame(int gameID, ChessGame.TeamColor teamColor) {
+        JoinGameRequest joinGameRequest = new JoinGameRequest(teamColor, gameID);
+            try {
+                JoinGameResponse joinGameResponse = server.joinGame(joinGameRequest, authToken);
+                System.out.printf("Success: You've joined game #%d as a player. Good luck!\n", gameID);
+                GameplayUI.drawChessBoardWithBlackOnTop();
+                GameplayUI.drawChessBoardWithWhiteOnTop();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
     private void observeGame(int gameID) {
+        JoinGameRequest joinGameRequest = new JoinGameRequest(null, gameID);
+        try {
+            JoinGameResponse joinGameResponse = server.joinGame(joinGameRequest, authToken);
+            System.out.printf("Success: You've joined game #%d as an observer.", gameID);
+            GameplayUI.drawChessBoardWithBlackOnTop();
+            GameplayUI.drawChessBoardWithWhiteOnTop();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
+
     private void logout() {
+        try {
+            LogoutResponse logoutResponse = server.logout(authToken);
+            System.out.println("Success: You have been logged out\n");
+            PreLoginUI preLoginUI = new PreLoginUI();
+            preLoginUI.help();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String getAuthToken() {
+        return authToken;
+    }
+
+    public void setAuthToken(String authToken) {
+        this.authToken = authToken;
     }
 }

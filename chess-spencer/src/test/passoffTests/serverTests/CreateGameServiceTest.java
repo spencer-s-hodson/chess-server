@@ -9,11 +9,11 @@ import dataAccess.*;
 import services.CreateGameService;
 import services.LoginService;
 import services.RegisterService;
-import services.requests.CreateGameRequest;
-import services.requests.LoginRequest;
-import services.requests.RegisterRequest;
-import services.responses.LoginResponse;
-import services.responses.RegisterResponse;
+import requests.CreateGameRequest;
+import requests.LoginRequest;
+import requests.RegisterRequest;
+import responses.LoginResponse;
+import responses.RegisterResponse;
 
 public class CreateGameServiceTest {
     private static final RegisterService registerService = new RegisterService();

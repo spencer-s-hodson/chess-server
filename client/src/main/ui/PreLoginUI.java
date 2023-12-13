@@ -1,6 +1,8 @@
 package ui;
 
+import requests.LoginRequest;
 import requests.RegisterRequest;
+import responses.LoginResponse;
 import responses.RegisterResponse;
 import server.ServerFacade;
 
@@ -8,7 +10,7 @@ import java.util.Scanner;
 
 public class PreLoginUI {
     public static final ServerFacade server = new ServerFacade();
-    public void help(String curr) throws Exception {
+    public void help() {
         String helpString = """
                            register <USERNAME> <PASSWORD> <EMAIL> - to create an account
                            login <USERNAME> <PASSWORD> - to play chess
@@ -16,6 +18,7 @@ public class PreLoginUI {
                            help - with possible commands
                         """;
 
+        String curr = "[LOGGED_OUT] >>> ";
         System.out.println(helpString);
 
         label:
@@ -40,26 +43,46 @@ public class PreLoginUI {
                     String password = scanner.next();
                     String email = scanner.next();
                     register(username, password, email);
-                    break;
+                    break label;
                 case "login":
                     // login the already existing user, throw an error if the user doesn't exist
                     String u = scanner.next();
                     String p = scanner.next();
                     login(u, p);
-                    break;
+                    break label;
                 default:
+                    // invalid command
                     System.out.println("invalid command");
                     break;
             }
         }
     }
 
-    private void register(String username, String password, String email) throws Exception {
+    private void register(String username, String password, String email) {
         RegisterRequest registerRequest = new RegisterRequest(username, password, email);
-        RegisterResponse registerResponse = server.register(registerRequest);
+        try {
+            RegisterResponse registerResponse = server.register(registerRequest);
+            System.out.printf("Success: %s has been successfully registered and logged in.\n", registerResponse.getUsername());
+
+            PostLoginUI postLoginUI = new PostLoginUI();
+            postLoginUI.setAuthToken(registerResponse.getAuthToken());
+            postLoginUI.login();
+        } catch (Exception e) {
+            throw new RuntimeException("that didn't work");
+        }
     }
 
     private void login(String username, String password) {
-        // the log the user in and then move to the post login ui
+        LoginRequest loginRequest = new LoginRequest(username, password);
+        try {
+            LoginResponse loginResponse = server.login(loginRequest);
+            System.out.printf("Success: %s has been successfully logged in\n", loginResponse.getUsername());
+
+            PostLoginUI postLoginUI = new PostLoginUI();
+            postLoginUI.setAuthToken(loginResponse.getAuthToken());
+            postLoginUI.login();
+        } catch (Exception e) {
+            throw new RuntimeException("that didn't work");
+        }
     }
 }

@@ -9,9 +9,9 @@ import dataAccess.*;
 import services.LoginService;
 import services.LogoutService;
 import services.RegisterService;
-import services.requests.LoginRequest;
-import services.requests.RegisterRequest;
-import services.responses.LoginResponse;
+import requests.LoginRequest;
+import requests.RegisterRequest;
+import responses.LoginResponse;
 
 public class LogoutServiceTest {
     private static final UserDAO userDAO;
