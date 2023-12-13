@@ -8,10 +8,23 @@ import responses.JoinGameResponse;
 import responses.ListGamesResponse;
 import responses.LogoutResponse;
 import server.ServerFacade;
+import websockets.WSClient;
+import websockets.WebSocketFacade;
+
 import java.util.Scanner;
 
 public class PostLoginUI {
     public static final ServerFacade server = new ServerFacade();
+    public static final WebSocketFacade ws;
+
+    static {
+        try {
+            ws = new WebSocketFacade();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public String authToken;
     public void login() {
         String helpString = """
@@ -82,29 +95,38 @@ public class PostLoginUI {
         CreateGameRequest createGameRequest = new CreateGameRequest(gameName);
         try {
             CreateGameResponse createGameResponse = server.createGame(createGameRequest, authToken);
-            System.out.printf("Success: a game has been created with the gameID as $d", createGameResponse.getGameID());
+            System.out.printf("Success: %s game has been created with the gameID as %d\n", gameName, createGameResponse.getGameID());
         } catch (Exception e) {
-            throw new RuntimeException("that didn't work");
+            throw new RuntimeException(e.getMessage());
         }
     }
     private void listGames() {
         try {
             ListGamesResponse listGamesResponse = server.listGames(authToken);
-            System.out.println("Success: Here is the list of all the existing games:\n");
+            System.out.println("Success: Here is the list of all the existing games:");
             for (models.Game game : listGamesResponse.getGames()) {
-                System.out.println(game);
+                System.out.printf("- %s #%d White: %s Black: %s\n", game.getGameName(), game.getGameID(), game.getWhiteUsername(), game.getBlackUsername());
             }
+            System.out.println();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getMessage());
         }
     }
     private void joinGame(int gameID, ChessGame.TeamColor teamColor) {
         JoinGameRequest joinGameRequest = new JoinGameRequest(teamColor, gameID);
             try {
                 JoinGameResponse joinGameResponse = server.joinGame(joinGameRequest, authToken);
+
+                // what happens here?
+                ws.joinPlayer(gameID, teamColor, authToken);
+
+                // does websocket stuff go in here then?
                 System.out.printf("Success: You've joined game #%d as a player. Good luck!\n", gameID);
-                GameplayUI.drawChessBoardWithBlackOnTop();
-                GameplayUI.drawChessBoardWithWhiteOnTop();
+                if (teamColor == ChessGame.TeamColor.WHITE) {
+                    GameplayUI.drawChessBoardWithBlackOnTop();
+                } else {
+                    GameplayUI.drawChessBoardWithWhiteOnTop();
+                }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -113,9 +135,8 @@ public class PostLoginUI {
         JoinGameRequest joinGameRequest = new JoinGameRequest(null, gameID);
         try {
             JoinGameResponse joinGameResponse = server.joinGame(joinGameRequest, authToken);
-            System.out.printf("Success: You've joined game #%d as an observer.", gameID);
+            System.out.printf("Success: You've joined game #%d as an observer.\n", gameID);
             GameplayUI.drawChessBoardWithBlackOnTop();
-            GameplayUI.drawChessBoardWithWhiteOnTop();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

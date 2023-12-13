@@ -5,11 +5,22 @@ import requests.RegisterRequest;
 import responses.LoginResponse;
 import responses.RegisterResponse;
 import server.ServerFacade;
+import websockets.WebSocketFacade;
 
 import java.util.Scanner;
 
 public class PreLoginUI {
     public static final ServerFacade server = new ServerFacade();
+    public static final WebSocketFacade ws;
+
+    static {
+        try {
+            ws = new WebSocketFacade();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void help() {
         String helpString = """
                            register <USERNAME> <PASSWORD> <EMAIL> - to create an account
@@ -27,7 +38,6 @@ public class PreLoginUI {
 
             System.out.println(curr);
             String response = scanner.next();
-            System.out.println(response);
 
             switch (response.toLowerCase()) {
                 case "help":
@@ -52,7 +62,7 @@ public class PreLoginUI {
                     break label;
                 default:
                     // invalid command
-                    System.out.println("invalid command");
+                    System.out.println("Invalid command. Please try again.");
                     break;
             }
         }
@@ -68,7 +78,7 @@ public class PreLoginUI {
             postLoginUI.setAuthToken(registerResponse.getAuthToken());
             postLoginUI.login();
         } catch (Exception e) {
-            throw new RuntimeException("that didn't work");
+            throw new RuntimeException(e.getMessage());
         }
     }
 
@@ -82,7 +92,7 @@ public class PreLoginUI {
             postLoginUI.setAuthToken(loginResponse.getAuthToken());
             postLoginUI.login();
         } catch (Exception e) {
-            throw new RuntimeException("that didn't work");
+            throw new RuntimeException(e.getMessage());
         }
     }
 }
