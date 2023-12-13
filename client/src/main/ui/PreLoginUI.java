@@ -5,11 +5,22 @@ import requests.RegisterRequest;
 import responses.LoginResponse;
 import responses.RegisterResponse;
 import server.ServerFacade;
+import websockets.WebSocketFacade;
 
 import java.util.Scanner;
 
 public class PreLoginUI {
     public static final ServerFacade server = new ServerFacade();
+    public static final WebSocketFacade ws;
+
+    static {
+        try {
+            ws = new WebSocketFacade();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void help() {
         String helpString = """
                            register <USERNAME> <PASSWORD> <EMAIL> - to create an account

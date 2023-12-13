@@ -31,6 +31,8 @@ public class Server {
     /** Handler for joining an existing game. */
     private final JoinGameHandler joinGameHandler = new JoinGameHandler();
 
+//    private final GameConnectionHandler gameConnectionHandler = new GameConnectionHandler();
+
     /**
      * The main entry point of the server application.
      * @param args Command line arguments.
@@ -45,9 +47,8 @@ public class Server {
     private void run() {
         Spark.port(8080);
         System.out.println("Listening on port 8080");
-
+        // websocket server
         Spark.webSocket("/connect", GameConnectionHandler.class);
-
 
         Spark.externalStaticFileLocation("web");
 

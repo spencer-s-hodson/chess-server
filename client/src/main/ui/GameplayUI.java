@@ -1,6 +1,20 @@
 package ui;
 
+import server.ServerFacade;
+import websockets.WebSocketFacade;
+
 public class GameplayUI {
+    public static final ServerFacade server = new ServerFacade();
+    public static final WebSocketFacade ws;
+
+    static {
+        try {
+            ws = new WebSocketFacade();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static void drawChessBoardWithWhiteOnTop() {
         String[][] board = initializeChessBoard(true); // true for white on top
         printBoard(board);

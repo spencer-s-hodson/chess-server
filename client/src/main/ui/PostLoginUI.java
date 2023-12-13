@@ -8,10 +8,23 @@ import responses.JoinGameResponse;
 import responses.ListGamesResponse;
 import responses.LogoutResponse;
 import server.ServerFacade;
+import websockets.WSClient;
+import websockets.WebSocketFacade;
+
 import java.util.Scanner;
 
 public class PostLoginUI {
     public static final ServerFacade server = new ServerFacade();
+    public static final WebSocketFacade ws;
+
+    static {
+        try {
+            ws = new WebSocketFacade();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public String authToken;
     public void login() {
         String helpString = """
@@ -103,6 +116,11 @@ public class PostLoginUI {
         JoinGameRequest joinGameRequest = new JoinGameRequest(teamColor, gameID);
             try {
                 JoinGameResponse joinGameResponse = server.joinGame(joinGameRequest, authToken);
+
+                // what happens here?
+                ws.joinPlayer(gameID, teamColor, authToken);
+
+                // does websocket stuff go in here then?
                 System.out.printf("Success: You've joined game #%d as a player. Good luck!\n", gameID);
                 if (teamColor == ChessGame.TeamColor.WHITE) {
                     GameplayUI.drawChessBoardWithBlackOnTop();
