@@ -13,7 +13,6 @@ import responses.JoinGameResponse;
 public class JoinGameService {
     private static final AuthDAO authDAO;
     private static final GameDAO gameDAO;
-
     static {
         try {
             authDAO = new AuthDAO();
@@ -34,7 +33,6 @@ public class JoinGameService {
             String username = authDAO.findAuthToken(authToken).getUsername();
             gameDAO.claimSpot(joinGameRequest.getTeamColor(), username, joinGameRequest.getGameID());
             return new JoinGameResponse(null);
-
         } catch (DataAccessException e) {
             return new JoinGameResponse(e.getMessage());
         }

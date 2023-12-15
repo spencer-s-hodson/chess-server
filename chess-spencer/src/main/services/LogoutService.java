@@ -10,7 +10,6 @@ import responses.LogoutResponse;
  */
 public class LogoutService {
     private static final AuthDAO authDAO;
-
     static {
         try {
             authDAO = new AuthDAO();
@@ -27,7 +26,6 @@ public class LogoutService {
             AuthToken at = authDAO.findAuthToken(authToken);
             authDAO.removeAuthToken(at);
             return new LogoutResponse(null);
-
         } catch (DataAccessException e) {
             return new LogoutResponse(e.getMessage());
         }

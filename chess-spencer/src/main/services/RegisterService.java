@@ -13,7 +13,6 @@ import java.util.UUID;
 public class RegisterService {
     private static final UserDAO userDAO;
     private static final AuthDAO authDAO;
-
     static {
         try {
             userDAO = new UserDAO();
@@ -32,12 +31,9 @@ public class RegisterService {
         try {
             User newUser = new User(r.getUsername(), r.getPassword(), r.getEmail());
             userDAO.addUser(newUser);
-
             AuthToken newAuthToken = new AuthToken(UUID.randomUUID().toString(), newUser.getUsername());
             authDAO.addAuthToken(newAuthToken);
-
             return new RegisterResponse(newUser.getUsername(), newAuthToken.getAuthToken());
-
         } catch (DataAccessException e) {
             return new RegisterResponse(e.getMessage());
         }

@@ -7,10 +7,12 @@ import java.util.Objects;
 public class Game implements ChessGame {
     private ChessBoard board;
     private TeamColor currTurn;
+    private boolean isOver;
 
-    public Game(Board board, TeamColor currTurn) {
+    public Game(Board board, TeamColor currTurn, boolean isOver) {
         this.board = board;
         this.currTurn = currTurn;
+        this.isOver = isOver;
     }
 
     public Game() {
@@ -28,65 +30,47 @@ public class Game implements ChessGame {
     public void setTeamTurn(TeamColor team) {
         currTurn = team;
     }
+    public boolean getIsOver() {
+        return this.isOver;
+    }
+    public void setIsOver(boolean isOver) {
+        this.isOver = isOver;
+    }
 
     @Override
-    public Collection<ChessMove> validMoves(ChessPosition startPosition) { // check to see if all the moves put the King in danger, is this for pieces that are at the given position only?
-        /* Figure out what piece is at that position
-        * get that piece's moves
-        * for each move in moves, makeMove
-        * then run isInCheck
-        * But here is where I need to check for Checkmate etc.*/
+    public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         Collection<ChessMove> validMoves = new HashSet<>();
-
         ChessPiece piece = board.getPiece(startPosition);
         TeamColor currColor = piece.getTeamColor();
         Collection<ChessMove> moves = piece.pieceMoves(board, startPosition);
         for (ChessMove move : moves) {
-            // piece that might get captured
             ChessPiece tempPiece = board.getPiece(move.getEndPosition());
-
-            // temp move
             board.addPiece(move.getEndPosition(), piece);
             board.addPiece(move.getStartPosition(), null);
-
-            // check for check
             if (!isInCheck(currColor)) validMoves.add(move);
-
-            // put back piece that moved
             board.addPiece(move.getStartPosition(), piece);
-
-            // put back piece that might have been captured
             board.addPiece(move.getEndPosition(), tempPiece);
         }
         return validMoves;
     }
 
-    @Override // come back to the invalid move later
-    public void makeMove(ChessMove move) throws InvalidMoveException { // updates the position based off of the move it gives, checks to see if the move is valid
+    @Override
+    public void makeMove(ChessMove move) throws InvalidMoveException {
         Collection<ChessMove> moves = validMoves(move.getStartPosition());
-
         // get the piece at the startPosition
         ChessPiece piece = board.getPiece(move.getStartPosition());
-
         if (!moves.contains(move) || piece.getTeamColor() != currTurn) {
             throw new InvalidMoveException();
         }
-
-
-//        ChessPiece piece = board.getPiece(move.getStartPosition());
-
-        // remove the piece at it's original position
+        // remove the piece at its original position
         board.addPiece(move.getStartPosition(), null);
-
         // check for promotion
         if (move.getPromotionPiece() == ChessPiece.PieceType.QUEEN) piece = new Queen(currTurn);
         else if (move.getPromotionPiece() == ChessPiece.PieceType.ROOK) piece = new Rook(currTurn);
         else if (move.getPromotionPiece() == ChessPiece.PieceType.KNIGHT) piece = new Knight(currTurn);
         else if (move.getPromotionPiece() == ChessPiece.PieceType.BISHOP) piece = new Bishop(currTurn);
-
-        // put the piece in it's new position
+        // put the piece in its new position
         board.addPiece(move.getEndPosition(), piece);
-
         // update whose turn it is
         if (currTurn == TeamColor.WHITE) setTeamTurn(TeamColor.BLACK);
         else setTeamTurn(TeamColor.WHITE);
@@ -100,7 +84,7 @@ public class Game implements ChessGame {
                 ChessPiece piece = board.getPiece(position);
                 if (piece != null) {
                     if (piece.getTeamColor() != teamColor) {
-                        Collection<ChessMove> moves = piece.pieceMoves(board, position); // need to fix this method first
+                        Collection<ChessMove> moves = piece.pieceMoves(board, position);
                         for (ChessMove move : moves) {
                             ChessPiece endPiece = board.getPiece(move.getEndPosition());
                             if (endPiece != null) {
@@ -115,47 +99,29 @@ public class Game implements ChessGame {
     }
     @Override
     public boolean isInCheckmate(TeamColor teamColor) {
-        /*
-        * Find the king with the right color
-        * ifValidMoves is empty and current positon is in check return true
-        */
-
         // can't be in checkmate if current team is not in check
         if (!isInCheck(teamColor)) return false;
         // go through each position
         for (int row = 1; row < 9; row++) {
             for (int col = 1; col < 9; col++) {
-                // stuff to use
                 ChessPosition position = new Position(row, col);
-                // doesn't like this right now, check for null
                 ChessPiece piece = board.getPiece(position);
                 if (piece != null) {
                     // find the right king
                     if (piece.getPieceType() == ChessPiece.PieceType.KING && piece.getTeamColor() == teamColor) {
-                        if (validMoves(position).isEmpty()) return true;
-                        else return false;
+                        return validMoves(position).isEmpty();
                     }
                 }
             }
         }
         return false;
     }
-    // get the set of moves for the king and see if all of those including his starting posiotion are inCheckmate
 
     @Override
     // needs: check and validMoves
-    public boolean isInStalemate(TeamColor teamColor) { // go through every positon on the board, and if validMoves.size() == 0 at every positon, then it doesn't work
-        /*
-        * go through each position on the board
-        * check to see if the position has a piece
-        * if it does, see if it's moves are empty
-        * if not empty return false
-        * return true at the end
-        */
-
+    public boolean isInStalemate(TeamColor teamColor) {
         // make sure it's actually their turn
         if (teamColor != currTurn) return false;
-
         // go through each position
         for (int row = 1; row < 9; row++) {
             for (int col = 1; col < 9; col++) {

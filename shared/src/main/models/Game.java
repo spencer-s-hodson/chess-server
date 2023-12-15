@@ -8,11 +8,6 @@ import java.util.Objects;
 
 public class Game {
     /**
-     * Counter to keep track of the game ID upon creation
-     */
-//    private static int counter = 1;
-
-    /**
      * The game ID for the chess game
      */
     private int gameID;
@@ -32,16 +27,6 @@ public class Game {
      * The logic for the chess game
      */
     private chess.Game game;
-
-    /**
-     * Constructs a chess game
-     * @param gameName The name of the chess game
-     */
-//    public Game(String gameName) {
-//        this.gameID = counter++;
-//        this.gameName = gameName;
-//        this.game = new chess.Game();
-//    }
 
     public Game(int gameID, String whiteUsername, String blackUsername, String gameName, chess.Game game) {
         this.gameID = gameID;
@@ -65,10 +50,6 @@ public class Game {
     public int getGameID() {
         return gameID;
     }
-
-
-
-
 
     /**
      * Sets a new game ID
@@ -109,7 +90,6 @@ public class Game {
     public void setBlackUsername(String blackUsername) {
         this.blackUsername = blackUsername;
     }
-
 
     public String getGameName() {
         return gameName;

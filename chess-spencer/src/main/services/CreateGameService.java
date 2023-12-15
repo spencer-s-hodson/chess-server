@@ -13,7 +13,6 @@ import responses.CreateGameResponse;
 public class CreateGameService {
     private static final AuthDAO authDAO;
     private static final GameDAO gameDAO;
-
     static {
         try {
             authDAO = new AuthDAO();
@@ -33,10 +32,8 @@ public class CreateGameService {
             if (createGameRequest.getGameName() == null) {
                 throw new DataAccessException("Error 400 bad request");
             }
-
             authDAO.findAuthToken(authToken);
             models.Game newGame = new Game(createGameRequest.getGameName(), new chess.Game());
-
             int gameID = gameDAO.addGame(newGame);
             newGame.setGameID(gameID);
             return new CreateGameResponse(newGame.getGameID());

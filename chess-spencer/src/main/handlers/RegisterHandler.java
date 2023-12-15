@@ -13,13 +13,10 @@ public class RegisterHandler extends Handler {
     public String register(Request request, Response response) {
         RegisterRequest bodyObj = makeObj(request, RegisterRequest.class);
         response.type("application/json");
-
         RegisterResponse result = registerService.register(bodyObj);
-
         if (result.getMessage() != null) {
             response.status(getStatus(result.getMessage()));
         }
-
         return makeJson(result);
     }
 }

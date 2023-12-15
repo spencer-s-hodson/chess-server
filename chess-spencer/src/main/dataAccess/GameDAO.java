@@ -1,6 +1,7 @@
 package dataAccess;
 
 import chess.ChessGame;
+import com.google.gson.Gson;
 import models.Game;
 import serialization.SerializationHelper;
 
@@ -29,10 +30,6 @@ public class GameDAO {
 
     private void configureDatabase() throws DataAccessException {
         try (Connection connection = myDatabase.getConnection()) {
-//            // Create the database if it doesn't exist
-//            PreparedStatement createDatabaseStatement = connection.prepareStatement("CREATE DATABASE IF NOT EXISTS chess_server");
-//            createDatabaseStatement.executeUpdate();
-
             connection.setCatalog(Database.DB_NAME);
             String createTable = """
             CREATE TABLE IF NOT EXISTS games (
@@ -44,10 +41,9 @@ public class GameDAO {
                 PRIMARY KEY (gameID)
             )""";
 
-            // Crete the table if it doesn't exist yet
+            // Create the table if it doesn't exist yet
             PreparedStatement createTableStatement = connection.prepareStatement(createTable);
             createTableStatement.executeUpdate();
-
         } catch (SQLException ex) {
             throw new DataAccessException(ex.getMessage());
         }
@@ -59,18 +55,10 @@ public class GameDAO {
      * @return The Game associated with a game ID if the game exists, otherwise return null
      */
     public models.Game findGame(int id) throws DataAccessException {
-//        for (Game game : games) {
-//            if (game.getGameID() == id) {
-//                return game;
-//            }
-//        }
-//        return null;
-
         Connection connection = myDatabase.getConnection();
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(FIND);
             preparedStatement.setInt(1, id);
-
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 int gameID = resultSet.getInt("gameID");
@@ -84,7 +72,6 @@ public class GameDAO {
                 return new models.Game(gameID, whiteUsername, blackUsername, gameName, game);
             }
             return null;
-//            throw new DataAccessException("Error 401 unauthorized");
         } catch (SQLException ex) {
             throw new DataAccessException(ex.getMessage());
         } finally {
@@ -106,7 +93,6 @@ public class GameDAO {
             preparedStatement.setString(3, game.getGameName());
             preparedStatement.setString(4, serializeChessGame(game.getGame()));
             preparedStatement.execute();
-
             ResultSet rs = preparedStatement.getGeneratedKeys();
             if (rs.next()) {
                 return rs.getInt(1);
@@ -127,17 +113,14 @@ public class GameDAO {
      */
     public void claimSpot(ChessGame.TeamColor teamColor, String username, int gameID) throws DataAccessException {
         models.Game game = findGame(gameID);
-
         // Game not found
         if (game == null) {
             throw new DataAccessException("Error 400 bad request");
         }
-
         // Join as a spectator
         if (teamColor == null) {
             return;
         }
-
         // Join as a player
         switch (teamColor) {
             // Join team white
@@ -185,12 +168,10 @@ public class GameDAO {
             clearStatement.execute();
         } catch (SQLException ex) {
             throw new DataAccessException(ex.getMessage());
-
         } finally {
             myDatabase.closeConnection(connection);
         }
     }
-
 
     /**
      * Returns the hash set of games
@@ -202,14 +183,12 @@ public class GameDAO {
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL);
             ResultSet resultSet = preparedStatement.executeQuery();
-
             while (resultSet.next()) {
                 int gameID = resultSet.getInt("gameID");
                 String whiteUsername = resultSet.getString("whiteUsername");
                 String blackUsername = resultSet.getString("blackUsername");
                 String gameName = resultSet.getString("gameName");
                 String gameData = resultSet.getString("game");
-
                 // Deserialize the game data back into a Game object
                 chess.Game game = SerializationHelper.deserializeChessGame(gameData);
                 games.add(new models.Game(gameID, whiteUsername, blackUsername, gameName, game));
@@ -219,6 +198,21 @@ public class GameDAO {
             throw new DataAccessException(ex.getMessage());
         } finally {
             myDatabase.closeConnection(connection);
+        }
+    }
+
+    public void updateGame(Game game) throws DataAccessException {
+        String sql = "UPDATE Games SET whiteUsername=?, blackUsername=?, gameName=?, game=? WHERE gameName=?;";
+        Connection connection = myDatabase.getConnection();
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, game.getWhiteUsername());
+            stmt.setString(2, game.getBlackUsername());
+            stmt.setString(3, game.getGameName());
+            stmt.setString(4, new Gson().toJson(game.getGame()));
+            stmt.setString(5, game.getGameName());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException("Error encountered while updating the game in the database.");
         }
     }
 }

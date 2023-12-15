@@ -5,21 +5,11 @@ import requests.RegisterRequest;
 import responses.LoginResponse;
 import responses.RegisterResponse;
 import server.ServerFacade;
-import websockets.WebSocketFacade;
 
 import java.util.Scanner;
 
 public class PreLoginUI {
     public static final ServerFacade server = new ServerFacade();
-    public static final WebSocketFacade ws;
-
-    static {
-        try {
-            ws = new WebSocketFacade();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     public void help() {
         String helpString = """
@@ -28,14 +18,12 @@ public class PreLoginUI {
                            quit - playing chess
                            help - with possible commands
                         """;
-
         String curr = "[LOGGED_OUT] >>> ";
         System.out.println(helpString);
 
         label:
         while (true) {
             Scanner scanner = new Scanner(System.in);
-
             System.out.println(curr);
             String response = scanner.next();
 
@@ -45,7 +33,7 @@ public class PreLoginUI {
                     System.out.println(helpString);
                     break;
                 case "quit":
-                    // break out of the loop
+                    // quit the program, and break out of the loop
                     break label;
                 case "register":
                     // register with the information, and then log the user in
@@ -73,7 +61,6 @@ public class PreLoginUI {
         try {
             RegisterResponse registerResponse = server.register(registerRequest);
             System.out.printf("Success: %s has been successfully registered and logged in.\n", registerResponse.getUsername());
-
             PostLoginUI postLoginUI = new PostLoginUI();
             postLoginUI.setAuthToken(registerResponse.getAuthToken());
             postLoginUI.login();
@@ -87,7 +74,6 @@ public class PreLoginUI {
         try {
             LoginResponse loginResponse = server.login(loginRequest);
             System.out.printf("Success: %s has been successfully logged in\n", loginResponse.getUsername());
-
             PostLoginUI postLoginUI = new PostLoginUI();
             postLoginUI.setAuthToken(loginResponse.getAuthToken());
             postLoginUI.login();

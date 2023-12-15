@@ -16,7 +16,7 @@ public class Handler {
      * @param someClass The type of request to convert to
      * @return The new service request
      * @param <T> The type of service request
-     * @throws RuntimeException If the Spark request has no body
+     * @throws RuntimeException If the Spark request doesn't have a body.
      */
     public static <T> T makeObj(Request request, Class<T> someClass) throws RuntimeException {
         var body = new Gson().fromJson(request.body(), someClass);
@@ -30,7 +30,7 @@ public class Handler {
      * Converts a service response into a Spark response (JSON string)
      * @param someResponse The service response
      * @return The Spark response (JSON string)
-     * @throws RuntimeException If the service response has no body
+     * @throws RuntimeException If the service response doesn't have a body.
      */
     public static String makeJson(Object someResponse) throws RuntimeException {
         String body = new Gson().toJson(someResponse);

@@ -5,7 +5,6 @@ import java.util.Objects;
 /**
  * This class contains information about a user of the chess server
  */
-
 public class User {
 
     /**

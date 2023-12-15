@@ -1,7 +1,7 @@
 package server;
 
 import com.google.gson.Gson;
-import org.eclipse.jetty.websocket.api.Session;
+import webSocketMessages.serverMessages.LoadGameMessage;
 import webSocketMessages.serverMessages.NotificationMessage;
 import webSocketMessages.serverMessages.ServerMessage;
 
@@ -10,10 +10,9 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionManager {
-    public final ConcurrentHashMap<String, Connection> connections = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, Connection> connections = new ConcurrentHashMap<>();
 
-    public void add(String authToken, Session session) {
-        Connection connection = new Connection(authToken, session);
+    public void add(String authToken, Connection connection) {
         connections.put(authToken, connection);
     }
 
@@ -26,14 +25,14 @@ public class ConnectionManager {
         for (Connection c : connections.values()) {
             if (c.getSession().isOpen()) {
                 if (!c.getAuthToken().equals(excludeAuthToken)) {
-                    c.send(notificationMessage.toString());
+                    c.send(new Gson().toJson(notificationMessage));
                 }
             } else {
                 removeList.add(c);
             }
         }
 
-        // Clean up any connections that were left open.
+        // Get rid of closed connections.
         for (var c : removeList) {
             connections.remove(c.getAuthToken());
         }
@@ -44,5 +43,15 @@ public class ConnectionManager {
         if (connection.getSession().isOpen()) {
             connection.send(new Gson().toJson(message));
         }
+    }
+
+    public void sendGameToAll(LoadGameMessage message) throws IOException {
+        for (Connection c : connections.values()) {
+            c.send(new Gson().toJson(message));
+        }
+    }
+
+    public ConcurrentHashMap<String, Connection> getConnections() {
+        return connections;
     }
 }

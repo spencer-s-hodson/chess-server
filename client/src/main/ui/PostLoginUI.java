@@ -4,17 +4,15 @@ import chess.ChessGame;
 import requests.CreateGameRequest;
 import requests.JoinGameRequest;
 import responses.CreateGameResponse;
-import responses.JoinGameResponse;
 import responses.ListGamesResponse;
-import responses.LogoutResponse;
 import server.ServerFacade;
-import websockets.WSClient;
 import websockets.WebSocketFacade;
 
 import java.util.Scanner;
 
 public class PostLoginUI {
     public static final ServerFacade server = new ServerFacade();
+    public String authToken;
     public static final WebSocketFacade ws;
 
     static {
@@ -25,7 +23,6 @@ public class PostLoginUI {
         }
     }
 
-    public String authToken;
     public void login() {
         String helpString = """
                            create <NAME> - a game
@@ -38,11 +35,9 @@ public class PostLoginUI {
                         """;
         String curr = "[LOGGED_IN] >>> ";
 
-
         label:
         while (true) {
             Scanner scanner = new Scanner(System.in);
-
             System.out.println(curr);
             String response = scanner.next();
             System.out.println(response);
@@ -61,11 +56,11 @@ public class PostLoginUI {
                     createGame(gameName);
                     break;
                 case "list":
-                    // lists all the created games
+                    // list all the created games
                     listGames();
                     break;
                 case "join":
-                    // joins a previously created game as a player
+                    // join a previously created game as a player
                     int id = scanner.nextInt();
                     String teamColorAsString = scanner.next();
                     ChessGame.TeamColor teamColor = switch (teamColorAsString.toLowerCase()) {
@@ -76,12 +71,12 @@ public class PostLoginUI {
                     joinGame(id, teamColor);
                     break;
                 case "observe":
-                    // joins the game as a spectator
+                    // join the game as a spectator
                     int gameID = scanner.nextInt();
                     observeGame(gameID);
                     break;
                 case "logout":
-                    // logs out the logged-in user
+                    // log out the logged-in user
                     logout();
                     break label;
                 default:
@@ -115,18 +110,11 @@ public class PostLoginUI {
     private void joinGame(int gameID, ChessGame.TeamColor teamColor) {
         JoinGameRequest joinGameRequest = new JoinGameRequest(teamColor, gameID);
             try {
-                JoinGameResponse joinGameResponse = server.joinGame(joinGameRequest, authToken);
-
-                // what happens here?
-                ws.joinPlayer(gameID, teamColor, authToken);
-
-                // does websocket stuff go in here then?
+                server.joinGame(joinGameRequest, authToken);
+                ws.joinPlayer(authToken, gameID, teamColor);
                 System.out.printf("Success: You've joined game #%d as a player. Good luck!\n", gameID);
-                if (teamColor == ChessGame.TeamColor.WHITE) {
-                    GameplayUI.drawChessBoardWithBlackOnTop();
-                } else {
-                    GameplayUI.drawChessBoardWithWhiteOnTop();
-                }
+                GameplayUI gameplayUI = new GameplayUI();
+                gameplayUI.joinGame(authToken, gameID);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -134,9 +122,11 @@ public class PostLoginUI {
     private void observeGame(int gameID) {
         JoinGameRequest joinGameRequest = new JoinGameRequest(null, gameID);
         try {
-            JoinGameResponse joinGameResponse = server.joinGame(joinGameRequest, authToken);
+            server.joinGame(joinGameRequest, authToken);
+            // TODO call on and create ws.joinObserver()
             System.out.printf("Success: You've joined game #%d as an observer.\n", gameID);
-            GameplayUI.drawChessBoardWithBlackOnTop();
+            GameplayUI gameplayUI = new GameplayUI();
+            gameplayUI.joinGame(authToken, gameID);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -144,17 +134,13 @@ public class PostLoginUI {
 
     private void logout() {
         try {
-            LogoutResponse logoutResponse = server.logout(authToken);
+            server.logout(authToken);
             System.out.println("Success: You have been logged out\n");
             PreLoginUI preLoginUI = new PreLoginUI();
             preLoginUI.help();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public String getAuthToken() {
-        return authToken;
     }
 
     public void setAuthToken(String authToken) {

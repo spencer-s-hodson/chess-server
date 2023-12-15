@@ -6,8 +6,8 @@ import java.util.Objects;
 import java.util.Set;
 
 public class Rook implements ChessPiece {
-    private ChessGame.TeamColor teamColor;
-    private PieceType pieceType;
+    private final ChessGame.TeamColor teamColor;
+    private final PieceType pieceType;
 
     public Rook(ChessGame.TeamColor teamColor) {
         this.teamColor = teamColor;
@@ -32,7 +32,7 @@ public class Rook implements ChessPiece {
         int[] colDirs = { 0, 0, -1, 1 };
 
         for (int i = 0; i < 4; i++) {
-            for (int distance = 1; distance < 8; distance++) { // Rook can move at most 7 squares in any direction
+            for (int distance = 1; distance < 8; distance++) { // Rook can move at most 7 squares up, down, left, or right
                 int newRow = myPosition.getRow() + rowDirs[i] * distance;
                 int newCol = myPosition.getColumn() + colDirs[i] * distance;
 

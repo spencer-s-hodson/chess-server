@@ -2,9 +2,9 @@ package chess;
 
 import java.util.Objects;
 
-public class Position implements ChessPosition { // can exist without Move
-    private int row; // 1-8, these need to be different somehow. How is the chess board stored, is it a grid?
-    private int column; // 1-8
+public class Position implements ChessPosition {
+    private final int row;
+    private final int column;
 
     public Position(int row, int column) {
         this.row = row;

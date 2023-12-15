@@ -64,17 +64,10 @@ public class UserDAO {
         if (user.getPassword() == null || user.getPassword().isEmpty()) {
             throw new DataAccessException("Error 400 bad request");
         }
-
         // The username already exists
         else if (findUser(user.getUsername()) != null) {
             throw new DataAccessException("Error 403 username already taken");
         }
-
-//        // The email already exists
-//        else if (Objects.equals(findUser(user.getUsername()).getEmail(), user.getEmail())) {
-//            throw new DataAccessException("Error 403 email already taken");
-//        }
-
         Connection connection = myDatabase.getConnection();
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(INSERT);
@@ -82,10 +75,8 @@ public class UserDAO {
             preparedStatement.setString(2, user.getPassword());
             preparedStatement.setString(3, user.getEmail());
             preparedStatement.execute();
-
         } catch (SQLException ex) {
             throw new DataAccessException(ex.getMessage());
-
         } finally {
             myDatabase.closeConnection(connection);
         }
@@ -94,20 +85,13 @@ public class UserDAO {
     /**
      * Finds a user in the data store
      * @param username The username that we are looking for in the data store
-     * @return true if the user is found, otherwise return false
+     * @return User object if the user is found, otherwise return false
      */
     public User findUser(String username) throws DataAccessException {
-//        for (User user : users) {
-//            if (Objects.equals(user.getUsername(), username) ) {
-//                return user;
-//            }
-//        }
-//        return null;
         Connection connection = myDatabase.getConnection();
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(FIND);
             preparedStatement.setString(1, username);
-
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 return new User(resultSet.getString("username"), resultSet.getString("password"), resultSet.getString("email"));
@@ -141,21 +125,6 @@ public class UserDAO {
             myDatabase.closeConnection(connection);
         }
     }
-
-//    /**
-//     * Returns the user with the associated username
-//     * @param username The username of the associated user
-//     * @return The user with the associated username
-//     * @throws DataAccessException When there is no user with the associated username
-//     */
-//    public User getUserByUsername(String username) throws DataAccessException {
-//        for (User user : users) {
-//            if (Objects.equals(user.getUsername(), username)) {
-//                return user;
-//            }
-//        }
-//        throw new DataAccessException("Error no user with that username");
-//    }
 
     /**
      * Clears all the Users in the database.

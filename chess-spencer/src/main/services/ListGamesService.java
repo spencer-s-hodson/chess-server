@@ -14,7 +14,6 @@ import java.util.HashSet;
 public class ListGamesService {
     private static final AuthDAO authDAO;
     private static final GameDAO gameDAO;
-
     static {
         try {
             authDAO = new AuthDAO();
@@ -33,7 +32,6 @@ public class ListGamesService {
             authDAO.findAuthToken(authToken);
             HashSet<Game> games = gameDAO.findAllGames();
             return new ListGamesResponse(games);
-
         } catch (DataAccessException e) {
             return new ListGamesResponse(e.getMessage());
         }

@@ -8,8 +8,6 @@ import serialization.ChessBoardAdapter;
 import serialization.ChessGameAdapter;
 import serialization.ChessPieceAdapter;
 
-import java.io.IOException;
-
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -88,7 +86,6 @@ public class ServerFacade {
     private static <T> T receiveResponse(HttpURLConnection http, Class<T> responseClass) throws Exception {
         var statusCode = http.getResponseCode();
         var statusMessage = http.getResponseMessage();
-
         T responseBody = readResponseBody(http, responseClass);
         System.out.printf("= Response =========\n[%d] %s\n\n%s\n\n", statusCode, statusMessage, responseBody);
         return responseBody;
@@ -98,26 +95,13 @@ public class ServerFacade {
         T responseBody;
         try (InputStream respBody = http.getInputStream()) {
             InputStreamReader inputStreamReader = new InputStreamReader(respBody);
-
             GsonBuilder builder = new GsonBuilder();
             builder.registerTypeAdapter(chess.Game.class, new ChessGameAdapter());
             builder.registerTypeAdapter(chess.Board.class, new ChessBoardAdapter());
             builder.registerTypeAdapter(chess.ChessPiece.class, new ChessPieceAdapter());
             Gson gson = builder.create();
-
             responseBody = gson.fromJson(inputStreamReader, responseClass);
         }
         return responseBody;
-    }
-
-    private static String readString(InputStream is) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        InputStreamReader sr = new InputStreamReader(is);
-        char[] buf = new char[1024];
-        int len;
-        while ((len = sr.read(buf)) > 0) {
-            sb.append(buf, 0, len);
-        }
-        return sb.toString();
     }
 }

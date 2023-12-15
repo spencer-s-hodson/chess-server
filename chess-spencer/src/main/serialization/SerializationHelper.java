@@ -9,8 +9,6 @@ public class SerializationHelper {
         return gson.toJson(game);
     }
 
-    // register type adapter?
-    // pass in a class, when you see this class, it's actually this other class, called on the GSON object
     public static chess.Game deserializeChessGame(String gameData) {
         GsonBuilder builder = new GsonBuilder();
         builder.registerTypeAdapter(chess.Game.class, new ChessGameAdapter());

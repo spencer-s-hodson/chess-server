@@ -12,14 +12,11 @@ public class JoinGameHandler extends Handler {
     public Object joinGame(Request request, Response response) {
         JoinGameRequest bodyObj = makeObj(request, JoinGameRequest.class);
         response.type("application/json");
-
         String authToken = getHeader(request);
         JoinGameResponse result = joinGameService.joinGame(bodyObj, authToken);
-
         if (result.getMessage() != null) {
             response.status(getStatus(result.getMessage()));
         }
-
         return makeJson(result);
     }
 }

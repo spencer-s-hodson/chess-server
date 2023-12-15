@@ -7,6 +7,7 @@ import java.io.IOException;
 public class Connection {
     private String authToken;
     private Session session;
+    private models.Game game;
 
     public Connection(String authToken, Session session) {
         this.authToken = authToken;
@@ -30,5 +31,13 @@ public class Connection {
 
     public void setSession(Session session) {
         this.session = session;
+    }
+
+    public models.Game getGame() {
+        return this.game;
+    }
+
+    public void setGame(models.Game game) {
+        this.game = game;
     }
 }

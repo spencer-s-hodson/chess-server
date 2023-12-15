@@ -1,82 +1,106 @@
 package ui;
 
-import server.ServerFacade;
+import chess.*;
+import dataAccess.DataAccessException;
+import dataAccess.GameDAO;
 import websockets.WebSocketFacade;
+import java.util.Scanner;
 
 public class GameplayUI {
-    public static final ServerFacade server = new ServerFacade();
+    public static final GameDAO gameDAO;
     public static final WebSocketFacade ws;
-
     static {
         try {
+            gameDAO = new GameDAO();
             ws = new WebSocketFacade();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static void drawChessBoardWithWhiteOnTop() {
-        String[][] board = initializeChessBoard(true); // true for white on top
-        printBoard(board);
-    }
+    public void joinGame(String authToken, int gameID) throws Exception {
+        drawChessBoard(gameID);
+        String helpString = """
+                           help - with possible commands
+                           redraw_chessboard - redraws the chess board upon the user’s request
+                           leave - remove yourself from the game
+                           make_move <START> <FINISH> - make your move!
+                           resign - forfeit the game
+                           highlight_legal_moves<POSITION> - see what moves are legal
+                        """;
+        String curr = "[JOINED_GAME] >>> ";
 
-    public static void drawChessBoardWithBlackOnTop() {
-        String[][] board = initializeChessBoard(false); // false for black on top
-        printBoard(board);
-    }
+        label:
+        while (true) {
+            Scanner scanner = new Scanner(System.in);
+            System.out.println(curr);
+            String response = scanner.next();
+            System.out.println(response);
 
-    private static String[][] initializeChessBoard(boolean isWhiteOnTop) {
-        String[][] board = new String[8][8];
-
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                if (i == 0 || i == 7) {
-                    String color = (isWhiteOnTop == (i == 0)) ? EscapeSequences.SET_TEXT_COLOR_WHITE : EscapeSequences.SET_TEXT_COLOR_BLACK;
-                    board[i][j] = getPiece(j, color);
-                } else if (i == 1 || i == 6) {
-                    String color = (isWhiteOnTop == (i == 1)) ? EscapeSequences.SET_TEXT_COLOR_WHITE : EscapeSequences.SET_TEXT_COLOR_BLACK;
-                    board[i][j] = color + EscapeSequences.WHITE_PAWN;
-                } else {
-                    board[i][j] = EscapeSequences.EMPTY;
-                }
+            switch (response.toLowerCase()) {
+                case "help":
+                    // print out the help options again (not WS)
+                    System.out.println(helpString);
+                    break;
+                case "redraw_chessboard":
+                    // redraws the chessboard (not WS)
+                    drawChessBoard(gameID);
+                    break;
+                case "leave":
+                    // leaves the game and goes back to the PostLoginUi (ws)
+                    leave(authToken, gameID);
+                    break label;
+                case "make_move":
+                    // calls on make move from the WebsocketHandler (ws)
+                    ChessPosition start = parsePosition(scanner.next());
+                    ChessPosition end = parsePosition(scanner.next());
+                    ChessMove move = new Move(start, end);
+                    makeMove(authToken, gameID, move);
+                    break;
+                case "resign":
+                    // forfeits the game (ws)
+                    resign(authToken, gameID);
+                    break;
+                case "highlight_legal_moves":
+                    // prints out the legal moves for a certain piece
+                    // TODO write all of the code that prints a board with all of the highlighted moves
+                    highlightMoves();
+                    break;
+                default:
+                    System.out.println("invalid command");
+                    break;
             }
         }
-        return board;
     }
 
-    private static String getPiece(int column, String color) {
-        switch (column) {
-            case 0:
-            case 7:
-                return color + EscapeSequences.WHITE_ROOK;
-            case 1:
-            case 6:
-                return color + EscapeSequences.WHITE_KNIGHT;
-            case 2:
-            case 5:
-                return color + EscapeSequences.WHITE_BISHOP;
-            case 3:
-                return color + EscapeSequences.WHITE_QUEEN;
-            case 4:
-                return color + EscapeSequences.WHITE_KING;
-            default:
-                return EscapeSequences.EMPTY;
-        }
+    public static void drawChessBoard(int gameID) throws DataAccessException {
+        chess.ChessBoard board = gameDAO.findGame(gameID).getGame().getBoard();
+        System.out.println(board.toString());
     }
 
-    private static void printBoard(String[][] board) {
-        for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board[i].length; j++) {
-                String bgColor = (i + j) % 2 == 0 ? EscapeSequences.SET_BG_COLOR_LIGHT_GREY : EscapeSequences.SET_BG_COLOR_DARK_GREY;
-                System.out.print(bgColor + board[i][j] + EscapeSequences.RESET_BG_COLOR);
-            }
-            System.out.println();
-        }
-        System.out.println(); // Add a blank line between the two boards
+    public void leave(String authToken, int gameID) throws Exception {
+        ws.leave(authToken, gameID);
+        PostLoginUI postLoginUI = new PostLoginUI();
+        postLoginUI.login();
     }
 
-    public static void main(String[] args) {
-        drawChessBoardWithWhiteOnTop();
-        drawChessBoardWithBlackOnTop();
+    public void makeMove(String authToken, int gameID, ChessMove move) throws Exception {
+        ws.makeMove(authToken, gameID, move);
+        drawChessBoard(gameID);
+    }
+
+    private ChessPosition parsePosition(String position) {
+        position = position.toLowerCase();
+        var col = position.charAt(0) - 'a' + 1;
+        var row = Character.getNumericValue(position.charAt(1));
+        return new Position(row, col);
+    }
+
+    public void resign(String authToken, int gameID) throws Exception {
+        ws.resign(authToken, gameID);
+    }
+
+    public void highlightMoves() {
+        // TODO create a method similar to the ones that prints the board, but highlight the valid moves
     }
 }

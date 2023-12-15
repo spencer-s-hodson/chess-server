@@ -18,7 +18,6 @@ public class AuthDAO {
     private static final String DELETE = "DELETE FROM authTokens WHERE authToken = ?";
     private static final String FIND = "SELECT * FROM authTokens WHERE authToken = ?";
     private static final String FIND_ALL = "SELECT * FROM authTokens";
-
     private static final Database myDatabase = new Database();
 
     public AuthDAO() throws DataAccessException {
@@ -27,11 +26,6 @@ public class AuthDAO {
 
     private void configureDatabase() throws DataAccessException {
         try (Connection connection = myDatabase.getConnection()) {
-//            // Create the database if it doesn't exist
-//            PreparedStatement createDatabaseStatement = connection.prepareStatement("CREATE DATABASE IF NOT EXISTS chess_server");
-//            createDatabaseStatement.executeUpdate();
-
-
             connection.setCatalog(Database.DB_NAME);
             String createTable = """
             CREATE TABLE IF NOT EXISTS authTokens (
@@ -40,10 +34,9 @@ public class AuthDAO {
                 PRIMARY KEY (authToken)
             )""";
 
-            // Crete the table if it doesn't exist yet
+            // Create the table if it doesn't exist yet
             PreparedStatement createTableStatement = connection.prepareStatement(createTable);
             createTableStatement.executeUpdate();
-
         } catch (SQLException ex) {
             throw new DataAccessException(ex.getMessage());
         }
@@ -55,10 +48,6 @@ public class AuthDAO {
      * @throws DataAccessException when the AuthToken already exists in the data store
      */
     public void addAuthToken(AuthToken authToken) throws DataAccessException {
-//        if (authToken == null) {
-//            throw new DataAccessException("invalid auth token");
-//        }
-//        authTokens.add(authToken);
         Connection connection = myDatabase.getConnection();
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(INSERT);
@@ -78,12 +67,6 @@ public class AuthDAO {
      * @throws DataAccessException when the AuthToken doesn't exist in the data store
      */
     public void removeAuthToken(AuthToken authToken) throws DataAccessException {
-//        for (AuthToken at : authTokens) {
-//            if (at == authToken) {
-//                authTokens.remove(authToken);
-//            }
-//        }
-//        throw new DataAccessException("auth token not found");
         Connection connection = myDatabase.getConnection();
         try {
             PreparedStatement clearStatement = connection.prepareStatement(DELETE);
@@ -100,17 +83,9 @@ public class AuthDAO {
     /**
      * Finds an AuthToken in the data store
      * @param authToken The AuthToken to find
-     * @return true if found, otherwise return false
+     * @return AuthToken object if found, otherwise return false
      */
     public AuthToken findAuthToken(String authToken) throws DataAccessException {
-//        for (AuthToken at : authTokens) {
-//            if (Objects.equals(at.getAuthCode(), authToken)) {
-//                return at;
-//            }
-//        }
-//        throw new DataAccessException("Error 401 unauthorized");
-
-
         Connection connection = myDatabase.getConnection();
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(FIND);
@@ -120,7 +95,6 @@ public class AuthDAO {
             if (resultSet.next()) {
                 return new AuthToken(resultSet.getString("authToken"), resultSet.getString("username"));
             }
-//            return null;
             throw new DataAccessException("Error 401 unauthorized");
         } catch (SQLException ex) {
             throw new DataAccessException(ex.getMessage());

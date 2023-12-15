@@ -7,8 +7,8 @@ import java.util.Set;
 
 public class Pawn implements ChessPiece {
 
-    private ChessGame.TeamColor teamColor;
-    private PieceType pieceType;
+    private final ChessGame.TeamColor teamColor;
+    private final PieceType pieceType;
 
     public Pawn(ChessGame.TeamColor teamColor) {
         this.teamColor = teamColor;

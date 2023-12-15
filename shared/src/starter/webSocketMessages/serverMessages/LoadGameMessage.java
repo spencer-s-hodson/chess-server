@@ -1,9 +1,7 @@
 package webSocketMessages.serverMessages;
 
-import chess.Game;
-
 public class LoadGameMessage extends ServerMessage {
-    private String game;
+    private final String game;
 
     public LoadGameMessage(String game) {
         super(ServerMessageType.LOAD_GAME);

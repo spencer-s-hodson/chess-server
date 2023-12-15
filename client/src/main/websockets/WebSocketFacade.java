@@ -2,30 +2,26 @@ package websockets;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
-import com.sun.nio.sctp.NotificationHandler;
 import webSocketMessages.userCommands.JoinPlayerCommand;
-
+import webSocketMessages.userCommands.LeaveCommand;
+import webSocketMessages.userCommands.MakeMoveCommand;
+import chess.ChessMove;
+import webSocketMessages.userCommands.ResignCommand;
 import javax.management.Notification;
 import javax.websocket.*;
-import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 public class WebSocketFacade extends Endpoint {
-    private Session session;
+    private final Session session;
 
     public WebSocketFacade() throws Exception {
         try {
             URI uri = new URI("ws://localhost:8080/connect");
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, uri);
-
-            this.session.addMessageHandler(new MessageHandler.Whole<String>() {
-                public void onMessage(String message) {
-                    Notification notification = new Gson().fromJson(message, Notification.class);
-                    System.out.println(message);
-
-                }
+            this.session.addMessageHandler((MessageHandler.Whole<String>) message -> {
+                Notification notification = new Gson().fromJson(message, Notification.class);
+                System.out.println(new Gson().toJson(notification));
             });
         } catch (Exception e) {
             throw new Exception(e.getMessage());
@@ -33,26 +29,42 @@ public class WebSocketFacade extends Endpoint {
     }
 
     @Override
-    public void onOpen(Session session, EndpointConfig endpointConfig) {
-        // sounds like i can ignore this or something
-    }
+    public void onOpen(Session session, EndpointConfig endpointConfig) {}
 
-    public void joinPlayer(int gameID, ChessGame.TeamColor teamColor, String authToken) throws Exception {
+    public void joinPlayer(String authToken, int gameID, ChessGame.TeamColor teamColor) throws Exception {
         try {
-            // creates the join player command
             JoinPlayerCommand joinPlayerCommand = new JoinPlayerCommand(gameID, teamColor, authToken);
-
-            // what is this doing: this is sending the text to the ws server i think?
-            String message = new Gson().toJson(joinPlayerCommand);
-            this.session.getBasicRemote().sendText(message);
-
-            // how do i get the load game message back?
-
+            this.session.getBasicRemote().sendText(new Gson().toJson(joinPlayerCommand));
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
-
-
     }
-    // THIS IS WHERE ALL THE USER COMMANDS WILL BE
+
+    public void leave(String authToken, int gameID) throws Exception {
+        try {
+            LeaveCommand leaveCommand = new LeaveCommand(authToken, gameID);
+            this.session.getBasicRemote().sendText(new Gson().toJson(leaveCommand));
+            this.session.close();
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+    }
+
+    public void makeMove(String authToken,int gameID, ChessMove move) throws Exception {
+        try {
+            MakeMoveCommand makeMoveCommand = new MakeMoveCommand(authToken, gameID, move);
+            this.session.getBasicRemote().sendText(new Gson().toJson(makeMoveCommand));
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+    }
+
+    public void resign(String authToken, int gameID) throws Exception {
+        try {
+            ResignCommand resignCommand = new ResignCommand(authToken, gameID);
+            this.session.getBasicRemote().sendText(new Gson().toJson(resignCommand));
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+    }
 }

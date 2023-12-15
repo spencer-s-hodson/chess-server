@@ -6,8 +6,8 @@ import java.util.Objects;
 import java.util.Set;
 
 public class King implements ChessPiece {
-    private ChessGame.TeamColor teamColor;
-    private PieceType pieceType;
+    private final ChessGame.TeamColor teamColor;
+    private final PieceType pieceType;
     public King(ChessGame.TeamColor teamColor) {
         this.teamColor = teamColor;
         this.pieceType = PieceType.KING;

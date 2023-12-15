@@ -6,8 +6,8 @@ import java.util.Objects;
 import java.util.Set;
 
 public class Knight implements ChessPiece {
-    private ChessGame.TeamColor teamColor;
-    private PieceType pieceType;
+    private final ChessGame.TeamColor teamColor;
+    private final PieceType pieceType;
 
     public Knight(ChessGame.TeamColor teamColor) {
         this.teamColor = teamColor;
@@ -50,7 +50,6 @@ public class Knight implements ChessPiece {
     private boolean isValidSquare(int row, int col) {
         return row >= 1 && row <= 8 && col >= 1 && col <= 8;
     }
-
 
     @Override
     public boolean equals(Object o) {

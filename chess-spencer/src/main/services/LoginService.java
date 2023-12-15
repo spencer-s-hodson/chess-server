@@ -17,7 +17,6 @@ import java.util.UUID;
 public class LoginService {
     private static final UserDAO userDAO;
     private static final AuthDAO authDAO;
-
     static {
         try {
             userDAO = new UserDAO();
@@ -38,15 +37,12 @@ public class LoginService {
             if (foundUser == null) {
                 throw new DataAccessException("Error 401 unauthorized, user does not exist");
             }
-
             if (!Objects.equals(foundUser.getPassword(), r.getPassword())) {
                 throw new DataAccessException("Error 401 unauthorized, password is incorrect");
             }
-
             AuthToken newAuthToken = new AuthToken(UUID.randomUUID().toString(), foundUser.getUsername());
             authDAO.addAuthToken(newAuthToken);
             return new LoginResponse(foundUser.getUsername(), newAuthToken.getAuthToken());
-
         } catch (DataAccessException e) {
             return new LoginResponse(e.getMessage());
         }

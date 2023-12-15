@@ -10,7 +10,6 @@ public class ClearApplicationService {
     private static final UserDAO userDAO;
     private static final AuthDAO authDAO;
     private static final GameDAO gameDAO;
-
     static {
         try {
             userDAO = new UserDAO();
@@ -30,7 +29,6 @@ public class ClearApplicationService {
             userDAO.clear();
             authDAO.clear();
             gameDAO.clear();
-
             return new ClearApplicationResponse("Database Clear");
         } catch (DataAccessException ex) {
             return new ClearApplicationResponse(ex.getMessage());

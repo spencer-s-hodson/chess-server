@@ -1,6 +1,8 @@
 package chess;
 
-public class Board implements ChessBoard { // can exist without Board DONE DO NOT TOUCH
+import models.ES;
+
+public class Board implements ChessBoard {
     ChessPiece[][] board;
 
     public Board() {
@@ -12,7 +14,7 @@ public class Board implements ChessBoard { // can exist without Board DONE DO NO
     }
 
     @Override
-    public void addPiece(ChessPosition position, ChessPiece piece) { // if i want to remove a piece, just call this method and use null for the ChessPiece argument
+    public void addPiece(ChessPosition position, ChessPiece piece) {
         board[position.getRow() - 1][position.getColumn() - 1] = piece;
     }
 
@@ -29,7 +31,6 @@ public class Board implements ChessBoard { // can exist without Board DONE DO NO
             }
         }
 
-        /** Was I supposed to use addPiece here */
         // rooks
         board[0][0] = new Rook(ChessGame.TeamColor.WHITE);
         board[0][7] = new Rook(ChessGame.TeamColor.WHITE);
@@ -65,6 +66,62 @@ public class Board implements ChessBoard { // can exist without Board DONE DO NO
         }
     }
 
+    @Override
+    public String toString() {
+        StringBuilder printedBoard = new StringBuilder();
+        for (int i = 0; i < 8; i ++) {
+            StringBuilder row = new StringBuilder();
+            for (int j = 0; j < 8; j++) {
+                ChessPiece piece = board[i][j];
+                String pieceRepresentation = getPieceRepresentation(piece);
+
+                String bgColor = (i + j) % 2 == 0 ? ES.SET_BG_COLOR_LIGHT_GREY : ES.SET_BG_COLOR_DARK_GREY;
+                if (piece != null) {
+                    if (piece.getTeamColor() == ChessGame.TeamColor.BLACK) {
+                        row.append(bgColor).append(pieceRepresentation).append(ES.SET_BG_COLOR_BLACK).append(ES.RESET_BG_COLOR);
+                    } else {
+                        row.append(bgColor).append(pieceRepresentation).append(ES.RESET_BG_COLOR);
+                    }
+                } else {
+                    row.append(bgColor).append(pieceRepresentation).append(ES.RESET_BG_COLOR);
+                }
+            }
+            printedBoard.append(row).append("\n");
+        }
+        return printedBoard.toString();
+    }
+
+    private String getPieceRepresentation(ChessPiece piece) {
+        if (piece == null) {
+            return ES.EMPTY;
+        }
+        return switch (piece.getTeamColor()) {
+            case WHITE -> getWhitePieceRepresentation(piece.getPieceType());
+            case BLACK -> getBlackPieceRepresentation(piece.getPieceType());
+        };
+    }
+
+    private String getWhitePieceRepresentation(ChessPiece.PieceType pieceType) {
+        return switch (pieceType) {
+            case KING -> ES.WHITE_KING;
+            case QUEEN -> ES.WHITE_QUEEN;
+            case ROOK -> ES.WHITE_ROOK;
+            case BISHOP -> ES.WHITE_BISHOP;
+            case KNIGHT -> ES.WHITE_KNIGHT;
+            case PAWN -> ES.WHITE_PAWN;
+        };
+    }
+
+    private String getBlackPieceRepresentation(ChessPiece.PieceType pieceType) {
+        return switch (pieceType) {
+            case KING -> ES.BLACK_KING;
+            case QUEEN -> ES.BLACK_QUEEN;
+            case ROOK -> ES.BLACK_ROOK;
+            case BISHOP -> ES.BLACK_BISHOP;
+            case KNIGHT -> ES.BLACK_KNIGHT;
+            case PAWN -> ES.BLACK_PAWN;
+        };
+    }
 
     @Override
     public boolean equals(Object o) {
